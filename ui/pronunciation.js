@@ -3,7 +3,7 @@
 // evalúa con reconocimiento de voz. Ver services/stt.js para la nota
 // importante sobre la dependencia de internet.
 
-import { addXP } from "../core/progress.js";
+import { addXP, recordAttempt } from "../core/progress.js";
 import { pickNextKana, recordAnswer } from "../core/srs.js";
 import { speakJapanese } from "../services/voice.js";
 import {
@@ -23,17 +23,21 @@ const ERROR_MESSAGES = {
 let currentChar = null;
 let recordedThisRound = false;
 
-export function renderPronunciation(container) {
+// `pool` opcional: igual que en quiz.js, restringe de qué caracteres
+// salen las preguntas (modo enfocado de práctica).
+export function renderPronunciation(container, pool) {
   if (!isSTTSupported()) {
     container.innerHTML = `<p class="error-msg">${ERROR_MESSAGES["not-supported"]}</p>`;
     return;
   }
-  nextPronQuestion(container);
+  nextPronQuestion(container, pool);
 }
 
-function nextPronQuestion(container) {
-  const kanaList = window.NihonGoData.kana;
-  const question = pickNextKana(kanaList, currentChar);
+function nextPronQuestion(container, pool) {
+  const fullList = window.NihonGoData.kana;
+  const askPool = pool && pool.length ? pool : fullList;
+
+  const question = pickNextKana(askPool, currentChar);
   currentChar = question.char;
   recordedThisRound = false;
 
@@ -59,10 +63,10 @@ function nextPronQuestion(container) {
   container.querySelector("#btn-hint").addEventListener("click", () => speakJapanese(question.char));
 
   const micBtn = container.querySelector("#btn-mic");
-  micBtn.addEventListener("click", () => handleMicTap(container, question, micBtn));
+  micBtn.addEventListener("click", () => handleMicTap(container, question, micBtn, pool));
 }
 
-function handleMicTap(container, question, micBtn) {
+function handleMicTap(container, question, micBtn, pool) {
   const feedback = container.querySelector("#quiz-feedback");
   feedback.textContent = "";
   feedback.className = "quiz-feedback";
@@ -73,7 +77,7 @@ function handleMicTap(container, question, micBtn) {
   startListening({
     onResult: (alternatives) => {
       const correct = checkPronunciation(alternatives, question.char);
-      showFeedback(container, question, correct, alternatives[0] || "");
+      showFeedback(container, question, correct, alternatives[0] || "", pool);
     },
     onError: (err) => {
       feedback.textContent = ERROR_MESSAGES[err] || "Hubo un error, intenta de nuevo.";
@@ -86,7 +90,7 @@ function handleMicTap(container, question, micBtn) {
   });
 }
 
-function showFeedback(container, question, correct, heard) {
+function showFeedback(container, question, correct, heard, pool) {
   const feedback = container.querySelector("#quiz-feedback");
   const actions = container.querySelector("#pron-actions");
 
@@ -102,9 +106,10 @@ function showFeedback(container, question, correct, heard) {
 
   // Solo se registra el PRIMER intento de cada pregunta (igual que el
   // quiz de opción múltiple). Reintentar es para practicar, no para
-  // "forzar" el sistema de repetición.
+  // "forzar" el sistema de repetición ni las estadísticas.
   if (!recordedThisRound) {
     recordAnswer(question.char, correct);
+    recordAttempt(question.char, correct); // sin "confusedWith": en voz no aplica
     if (correct) addXP(10);
     recordedThisRound = true;
   }
@@ -114,11 +119,11 @@ function showFeedback(container, question, correct, heard) {
     : `<button class="btn btn-secondary" id="btn-retry">Intentar de nuevo</button>
        <button class="btn btn-primary" id="btn-skip">Siguiente →</button>`;
 
-  actions.querySelector("#btn-next")?.addEventListener("click", () => nextPronQuestion(container));
-  actions.querySelector("#btn-skip")?.addEventListener("click", () => nextPronQuestion(container));
+  actions.querySelector("#btn-next")?.addEventListener("click", () => nextPronQuestion(container, pool));
+  actions.querySelector("#btn-skip")?.addEventListener("click", () => nextPronQuestion(container, pool));
   actions.querySelector("#btn-retry")?.addEventListener("click", () => {
     actions.innerHTML = "";
     const micBtn = container.querySelector("#btn-mic");
-    handleMicTap(container, question, micBtn);
+    handleMicTap(container, question, micBtn, pool);
   });
 }
