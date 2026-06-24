@@ -1,0 +1,75 @@
+// ui/quiz.js
+
+import { addXP, getProgress } from "../core/progress.js";
+import { pickNextKana, recordAnswer, getDistractors } from "../core/srs.js";
+import { speakJapanese } from "../services/voice.js";
+
+let currentChar = null;
+
+export function renderQuiz(container, onNavigate) {
+  nextQuestion(container, onNavigate);
+}
+
+function nextQuestion(container, onNavigate) {
+  const kanaList = window.NihonGoData.kana;
+  const question = pickNextKana(kanaList, currentChar);
+  currentChar = question.char;
+
+  const distractors = getDistractors(kanaList, question.char, 3);
+  const options = [...distractors, question.romaji].sort(() => Math.random() - 0.5);
+
+  container.innerHTML = `
+    <header class="app-header">
+      <button class="back-btn" id="btn-back">←</button>
+      <h2 class="screen-title">Practicar</h2>
+    </header>
+
+    <p class="quiz-instruction">¿Cómo se lee este carácter?</p>
+
+    <section class="card quiz-card">
+      <button class="quiz-char-btn" id="btn-speak" aria-label="Escuchar">
+        <span class="quiz-char">${question.char}</span>
+        <span class="speaker-icon">🔊</span>
+      </button>
+    </section>
+
+    <div class="quiz-options" id="quiz-options">
+      ${options
+        .map((opt) => `<button class="option-btn" data-opt="${opt}">${opt}</button>`)
+        .join("")}
+    </div>
+
+    <p class="quiz-feedback" id="quiz-feedback"></p>
+  `;
+
+  container.querySelector("#btn-speak").addEventListener("click", () => speakJapanese(question.char));
+  container.querySelector("#btn-back").addEventListener("click", () => onNavigate("home"));
+
+  const optionButtons = container.querySelectorAll(".option-btn");
+  optionButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      optionButtons.forEach((b) => (b.disabled = true));
+      const chosen = btn.dataset.opt;
+      const correct = chosen === question.romaji;
+      const feedback = container.querySelector("#quiz-feedback");
+
+      if (correct) {
+        btn.classList.add("correct");
+        feedback.textContent = "¡Correcto! +10 XP";
+        feedback.className = "quiz-feedback feedback-correct";
+        addXP(10);
+      } else {
+        btn.classList.add("incorrect");
+        feedback.textContent = `Era "${question.romaji}"`;
+        feedback.className = "quiz-feedback feedback-incorrect";
+        optionButtons.forEach((b) => {
+          if (b.dataset.opt === question.romaji) b.classList.add("correct");
+        });
+      }
+
+      recordAnswer(question.char, correct);
+
+      setTimeout(() => nextQuestion(container, onNavigate), 1100);
+    });
+  });
+}
