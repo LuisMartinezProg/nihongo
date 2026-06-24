@@ -528,6 +528,89 @@ button:focus-visible,
   margin-bottom: 0;
 }
 
+/* ---------- Mapa de errores (Progreso) ---------- */
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 4px 0 10px;
+}
+
+.empty-msg {
+  color: var(--grey);
+  font-size: 14px;
+  text-align: center;
+  padding: 24px 8px;
+}
+
+.error-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.error-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 2px rgba(31, 64, 104, 0.08);
+}
+
+.error-char {
+  font-family: "Shippori Mincho", serif;
+  font-size: 28px;
+  color: var(--ai-iro);
+  min-width: 36px;
+  text-align: center;
+}
+
+.error-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.error-romaji {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.error-rate {
+  font-size: 12px;
+  color: var(--vermillion);
+}
+
+.error-confusion {
+  font-size: 11px;
+  color: var(--grey);
+}
+
+/* ---------- Aviso de modo enfocado (Practicar) ---------- */
+
+.focused-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--vermillion);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.focused-banner button {
+  color: #fff;
+  text-decoration: underline;
+  font-weight: 700;
+  font-size: 13px;
+}
+
 /* ---------- Accesibilidad ---------- */
 
 @media (prefers-reduced-motion: reduce) {
