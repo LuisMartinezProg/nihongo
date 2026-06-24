@@ -1,0 +1,464 @@
+/* ============================================
+   NihonGo — estilos
+   Paleta: ai-iro (índigo japonés) + papel frío
+   gris-azulado + acento vermellón reservado
+   solo para el sello hanko de caracteres dominados.
+   ============================================ */
+
+:root {
+  --ai-iro: #1f4068;
+  --ai-iro-dark: #16314f;
+  --paper: #eaeef1;
+  --card: #ffffff;
+  --vermillion: #c13b2e;
+  --matcha: #5c7a5e;
+  --sumi: #232323;
+  --grey: #7c8593;
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--sumi);
+  font-family: "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  background: none;
+}
+
+button:focus-visible,
+.nav-btn:focus-visible {
+  outline: 3px solid var(--ai-iro);
+  outline-offset: 2px;
+}
+
+#app {
+  flex: 1;
+  padding: 20px 16px 96px;
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ---------- Header ---------- */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 12px;
+}
+
+.wordmark {
+  font-family: "Shippori Mincho", serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--ai-iro);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.wordmark-sub {
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--grey);
+  letter-spacing: 0.04em;
+}
+
+.header-stats {
+  display: flex;
+  gap: 8px;
+}
+
+.pill {
+  background: var(--ai-iro);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.pill-streak {
+  background: var(--card);
+  color: var(--sumi);
+  border: 1px solid #dadfe3;
+}
+
+.screen-title {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.back-btn {
+  font-size: 22px;
+  color: var(--ai-iro);
+  padding: 4px 10px 4px 0;
+  font-weight: 700;
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(31, 64, 104, 0.08);
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--grey);
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+
+.hero-card {
+  background: var(--ai-iro);
+  color: #fff;
+}
+
+.hero-card .eyebrow {
+  color: #b9c8d8;
+}
+
+.hero-title {
+  font-family: "Shippori Mincho", serif;
+  font-size: 28px;
+  margin: 0 0 4px;
+}
+
+.hero-sub {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #d7e0e9;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.08s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: #fff;
+  color: var(--ai-iro);
+}
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--ai-iro);
+  border: 2px solid var(--ai-iro);
+}
+
+/* ---------- Stats row (Home) ---------- */
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ai-iro);
+}
+
+.stat-label {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.stat-sub {
+  font-size: 11px;
+  color: var(--grey);
+  margin-top: 2px;
+}
+
+/* ---------- Lecciones ---------- */
+
+.lesson-card h3 {
+  margin: 0 0 2px;
+  font-size: 17px;
+}
+
+.lesson-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--grey);
+}
+
+.lesson-locked {
+  opacity: 0.55;
+}
+
+.kana-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.kana-cell {
+  position: relative;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 10px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 1px 2px rgba(31, 64, 104, 0.08);
+}
+
+.kana-cell:active {
+  background: #f0f3f5;
+}
+
+.kana-char {
+  font-family: "Shippori Mincho", serif;
+  font-size: 24px;
+  color: var(--sumi);
+}
+
+.kana-romaji {
+  font-size: 11px;
+  color: var(--grey);
+  font-weight: 700;
+}
+
+.kana-cell.mastered .kana-char {
+  color: var(--ai-iro);
+}
+
+/* Sello hanko: marca circular vermellón, ligeramente rotada, como un
+   sello real estampado sobre el papel. */
+.hanko {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--vermillion);
+  color: var(--vermillion);
+  font-family: "Shippori Mincho", serif;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  transform: rotate(-12deg);
+}
+
+/* ---------- Quiz / Practicar ---------- */
+
+.quiz-instruction {
+  text-align: center;
+  color: var(--grey);
+  font-size: 14px;
+  margin: 0 0 12px;
+}
+
+.quiz-card {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.quiz-char-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz-char {
+  font-family: "Shippori Mincho", serif;
+  font-size: 64px;
+  color: var(--ai-iro);
+  line-height: 1;
+}
+
+.speaker-icon {
+  font-size: 20px;
+}
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.option-btn {
+  background: var(--card);
+  border: 2px solid #dadfe3;
+  border-radius: 12px;
+  min-height: 56px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--sumi);
+}
+
+.option-btn:active {
+  background: #f0f3f5;
+}
+
+.option-btn:disabled {
+  opacity: 1;
+}
+
+.option-btn.correct {
+  background: var(--matcha);
+  border-color: var(--matcha);
+  color: #fff;
+}
+
+.option-btn.incorrect {
+  background: var(--vermillion);
+  border-color: var(--vermillion);
+  color: #fff;
+}
+
+.quiz-feedback {
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  min-height: 22px;
+  margin-top: 16px;
+}
+
+.feedback-correct {
+  color: var(--matcha);
+}
+
+.feedback-incorrect {
+  color: var(--vermillion);
+}
+
+/* ---------- Placeholders ---------- */
+
+.placeholder-card {
+  text-align: center;
+  padding: 36px 18px;
+}
+
+.placeholder-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.placeholder-card h3 {
+  margin: 0 0 6px;
+}
+
+.placeholder-card p {
+  color: var(--grey);
+  font-size: 14px;
+  margin: 0;
+}
+
+.error-msg {
+  color: var(--vermillion);
+  text-align: center;
+  padding: 24px;
+}
+
+/* ---------- Bottom nav ---------- */
+
+#bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid #dadfe3;
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  z-index: 10;
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border-radius: 10px;
+  color: var(--grey);
+  min-height: 52px;
+}
+
+.nav-icon {
+  font-size: 20px;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.nav-btn.active {
+  color: var(--ai-iro);
+}
+
+.nav-btn.active .nav-icon {
+  transform: translateY(-1px);
+}
+
+/* ---------- Accesibilidad ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .nav-icon {
+    transition: none !important;
+  }
+}
