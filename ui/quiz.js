@@ -1,21 +1,26 @@
 // ui/quiz.js
 
-import { addXP, getProgress } from "../core/progress.js";
+import { addXP, recordAttempt } from "../core/progress.js";
 import { pickNextKana, recordAnswer, getDistractors } from "../core/srs.js";
 import { speakJapanese } from "../services/voice.js";
 
 let currentChar = null;
 
-export function renderQuiz(container) {
-  nextQuestion(container);
+// `pool` es opcional: si se pasa (modo enfocado, ver ui/practice.js),
+// las preguntas salen solo de ahí. Los distractores del quiz siempre
+// salen de la lista completa, para que las opciones no se repitan.
+export function renderQuiz(container, pool) {
+  nextQuestion(container, pool);
 }
 
-function nextQuestion(container) {
-  const kanaList = window.NihonGoData.kana;
-  const question = pickNextKana(kanaList, currentChar);
+function nextQuestion(container, pool) {
+  const fullList = window.NihonGoData.kana;
+  const askPool = pool && pool.length ? pool : fullList;
+
+  const question = pickNextKana(askPool, currentChar);
   currentChar = question.char;
 
-  const distractors = getDistractors(kanaList, question.char, 3);
+  const distractors = getDistractors(fullList, question.char, 3);
   const options = [...distractors, question.romaji].sort(() => Math.random() - 0.5);
 
   container.innerHTML = `
@@ -63,7 +68,14 @@ function nextQuestion(container) {
 
       recordAnswer(question.char, correct);
 
-      setTimeout(() => nextQuestion(container), 1100);
+      // Si falló, buscamos qué carácter corresponde a la opción que
+      // eligió para guardarlo como "confusión" en el mapa de errores.
+      const confusedChar = !correct
+        ? fullList.find((k) => k.romaji === chosen)?.char || null
+        : null;
+      recordAttempt(question.char, correct, confusedChar);
+
+      setTimeout(() => nextQuestion(container, pool), 1100);
     });
   });
 }
