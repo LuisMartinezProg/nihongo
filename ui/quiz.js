@@ -6,11 +6,11 @@ import { speakJapanese } from "../services/voice.js";
 
 let currentChar = null;
 
-export function renderQuiz(container, onNavigate) {
-  nextQuestion(container, onNavigate);
+export function renderQuiz(container) {
+  nextQuestion(container);
 }
 
-function nextQuestion(container, onNavigate) {
+function nextQuestion(container) {
   const kanaList = window.NihonGoData.kana;
   const question = pickNextKana(kanaList, currentChar);
   currentChar = question.char;
@@ -19,11 +19,6 @@ function nextQuestion(container, onNavigate) {
   const options = [...distractors, question.romaji].sort(() => Math.random() - 0.5);
 
   container.innerHTML = `
-    <header class="app-header">
-      <button class="back-btn" id="btn-back">←</button>
-      <h2 class="screen-title">Practicar</h2>
-    </header>
-
     <p class="quiz-instruction">¿Cómo se lee este carácter?</p>
 
     <section class="card quiz-card">
@@ -43,7 +38,6 @@ function nextQuestion(container, onNavigate) {
   `;
 
   container.querySelector("#btn-speak").addEventListener("click", () => speakJapanese(question.char));
-  container.querySelector("#btn-back").addEventListener("click", () => onNavigate("home"));
 
   const optionButtons = container.querySelectorAll(".option-btn");
   optionButtons.forEach((btn) => {
@@ -69,7 +63,7 @@ function nextQuestion(container, onNavigate) {
 
       recordAnswer(question.char, correct);
 
-      setTimeout(() => nextQuestion(container, onNavigate), 1100);
+      setTimeout(() => nextQuestion(container), 1100);
     });
   });
 }
