@@ -6,7 +6,7 @@ import { loadProgress, checkAndUpdateStreak } from "./core/progress.js";
 import { renderNav } from "./ui/nav.js";
 import { renderHome } from "./ui/home.js";
 import { renderLessons } from "./ui/lessons.js";
-import { renderQuiz } from "./ui/quiz.js";
+import { renderPractice } from "./ui/practice.js";
 import {
   renderProgresoPlaceholder,
   renderPerfilPlaceholder,
@@ -33,7 +33,7 @@ function renderScreen() {
       renderLessons(app, navigateTo);
       break;
     case "practicar":
-      renderQuiz(app, navigateTo);
+      renderPractice(app, navigateTo);
       break;
     case "progreso":
       renderProgresoPlaceholder(app);
