@@ -6,11 +6,9 @@ import { loadProgress, checkAndUpdateStreak } from "./core/progress.js";
 import { renderNav } from "./ui/nav.js";
 import { renderHome } from "./ui/home.js";
 import { renderLessons } from "./ui/lessons.js";
-import { renderPractice } from "./ui/practice.js";
-import {
-  renderProgresoPlaceholder,
-  renderPerfilPlaceholder,
-} from "./ui/placeholders.js";
+import { renderPractice, exitFocusedMode } from "./ui/practice.js";
+import { renderProgresoScreen } from "./ui/progress-screen.js";
+import { renderPerfilPlaceholder } from "./ui/placeholders.js";
 
 window.NihonGoData = { kana: [] };
 
@@ -18,6 +16,11 @@ const app = document.getElementById("app");
 let activeTab = "home";
 
 function navigateTo(tab) {
+  // Si el usuario sale de Practicar por cualquier vía (otra pestaña,
+  // botón "atrás"), cerramos el modo enfocado para que no se quede
+  // pegado en la siguiente visita normal a esa pestaña.
+  if (tab !== "practicar") exitFocusedMode();
+
   activeTab = tab;
   renderScreen();
   renderNav(activeTab, navigateTo);
@@ -36,7 +39,7 @@ function renderScreen() {
       renderPractice(app, navigateTo);
       break;
     case "progreso":
-      renderProgresoPlaceholder(app);
+      renderProgresoScreen(app, navigateTo);
       break;
     case "perfil":
       renderPerfilPlaceholder(app);
