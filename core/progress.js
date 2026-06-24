@@ -94,6 +94,55 @@ export function countMastered(kanaList, masteryBox = 4) {
   return kanaList.filter((k) => (p.kana[k.char]?.box ?? 0) >= masteryBox).length;
 }
 
+// ---------- Estadísticas / mapa de errores ----------
+// Estos datos alimentan core/errorMap.js y la pantalla de Progreso.
+// No reemplazan la "caja" del SRS (eso sigue en setKanaBox/getKanaBox);
+// esto es historial puro para saber QUÉ falla el usuario y CON QUÉ lo
+// confunde, sin afectar la repetición espaciada.
+
+export function recordAttempt(char, wasCorrect, confusedWithChar = null) {
+  const p = getProgress();
+  if (!p.kana[char]) p.kana[char] = {};
+  const entry = p.kana[char];
+
+  entry.attempts = (entry.attempts || 0) + 1;
+  if (!wasCorrect) {
+    entry.errors = (entry.errors || 0) + 1;
+    if (confusedWithChar) {
+      if (!entry.confusedWith) entry.confusedWith = {};
+      entry.confusedWith[confusedWithChar] = (entry.confusedWith[confusedWithChar] || 0) + 1;
+    }
+  }
+  saveProgress();
+}
+
+export function getKanaStats(char) {
+  const entry = getProgress().kana[char] || {};
+  return {
+    box: entry.box || 0,
+    attempts: entry.attempts || 0,
+    errors: entry.errors || 0,
+    confusedWith: entry.confusedWith || {},
+  };
+}
+
+// Precisión global (0-100). Devuelve null si todavía no hay intentos
+// registrados, para que la UI pueda mostrar "—" en vez de "100%" falso.
+export function getOverallAccuracy(kanaList) {
+  const p = getProgress();
+  let totalAttempts = 0;
+  let totalErrors = 0;
+
+  kanaList.forEach((k) => {
+    const entry = p.kana[k.char] || {};
+    totalAttempts += entry.attempts || 0;
+    totalErrors += entry.errors || 0;
+  });
+
+  if (totalAttempts === 0) return null;
+  return Math.round(((totalAttempts - totalErrors) / totalAttempts) * 100);
+}
+
 window.NihonGoProgress = {
   loadProgress,
   saveProgress,
@@ -105,4 +154,7 @@ window.NihonGoProgress = {
   getKanaBox,
   setKanaBox,
   countMastered,
+  recordAttempt,
+  getKanaStats,
+  getOverallAccuracy,
 };
