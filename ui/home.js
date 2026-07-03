@@ -6,6 +6,8 @@ import {
   getXpIntoLevel,
   countMastered,
 } from "../core/progress.js";
+import { t } from "../core/i18n.js";
+import { renderLangSwitchHTML, bindLangSwitch } from "./langSwitch.js";
 
 export function renderHome(container, onNavigate) {
   const kanaList = window.NihonGoData.kana;
@@ -20,32 +22,34 @@ export function renderHome(container, onNavigate) {
       <div class="header-stats">
         <span class="pill">Lv. ${level}</span>
         <span class="pill pill-streak">🔥 ${p.streak}</span>
+        ${renderLangSwitchHTML()}
       </div>
     </header>
 
     <section class="card hero-card">
-      <p class="eyebrow">今日のレッスン</p>
-      <h2 class="hero-title">Hiragana</h2>
-      <p class="hero-sub">あ — ん · ${mastered}/${kanaList.length} dominados</p>
-      <button class="btn btn-primary" id="btn-lesson">Empezar →</button>
+      <p class="eyebrow">${t("home_eyebrow")}</p>
+      <h2 class="hero-title">${t("home_lesson_title")}</h2>
+      <p class="hero-sub">あ — ん · ${t("home_lesson_sub", { mastered, total: kanaList.length })}</p>
+      <button class="btn btn-primary" id="btn-lesson">${t("home_btn_start")}</button>
     </section>
 
     <section class="stats-row">
       <div class="card stat-box">
         <span class="stat-value">${p.xp}</span>
-        <span class="stat-label">XP total</span>
-        <span class="stat-sub">${xpIntoLevel}/100 al siguiente nivel</span>
+        <span class="stat-label">${t("home_stat_xp_label")}</span>
+        <span class="stat-sub">${t("home_stat_xp_sub", { xpIntoLevel })}</span>
       </div>
       <div class="card stat-box">
         <span class="stat-value">${mastered}</span>
-        <span class="stat-label">Caracteres sellados</span>
-        <span class="stat-sub">de ${kanaList.length} hiragana</span>
+        <span class="stat-label">${t("home_stat_mastered_label")}</span>
+        <span class="stat-sub">${t("home_stat_mastered_sub", { total: kanaList.length })}</span>
       </div>
     </section>
 
-    <button class="btn btn-secondary" id="btn-practice">Practicar ahora</button>
+    <button class="btn btn-secondary" id="btn-practice">${t("home_btn_practice")}</button>
   `;
 
+  bindLangSwitch(container);
   container.querySelector("#btn-lesson").addEventListener("click", () => onNavigate("lecciones"));
   container.querySelector("#btn-practice").addEventListener("click", () => onNavigate("practicar"));
 }
