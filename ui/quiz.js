@@ -3,6 +3,7 @@
 import { addXP, recordAttempt } from "../core/progress.js";
 import { pickNextKana, recordAnswer, getDistractors } from "../core/srs.js";
 import { speakJapanese } from "../services/voice.js";
+import { t } from "../core/i18n.js";
 
 let currentChar = null;
 
@@ -24,10 +25,10 @@ function nextQuestion(container, pool) {
   const options = [...distractors, question.romaji].sort(() => Math.random() - 0.5);
 
   container.innerHTML = `
-    <p class="quiz-instruction">¿Cómo se lee este carácter?</p>
+    <p class="quiz-instruction">${t("quiz_question")}</p>
 
     <section class="card quiz-card">
-      <button class="quiz-char-btn" id="btn-speak" aria-label="Escuchar">
+      <button class="quiz-char-btn" id="btn-speak" aria-label="${t("quiz_listen_aria")}">
         <span class="quiz-char">${question.char}</span>
         <span class="speaker-icon">🔊</span>
       </button>
@@ -54,12 +55,12 @@ function nextQuestion(container, pool) {
 
       if (correct) {
         btn.classList.add("correct");
-        feedback.textContent = "¡Correcto! +10 XP";
+        feedback.textContent = t("quiz_correct");
         feedback.className = "quiz-feedback feedback-correct";
         addXP(10);
       } else {
         btn.classList.add("incorrect");
-        feedback.textContent = `Era "${question.romaji}"`;
+        feedback.textContent = t("quiz_incorrect", { romaji: question.romaji });
         feedback.className = "quiz-feedback feedback-incorrect";
         optionButtons.forEach((b) => {
           if (b.dataset.opt === question.romaji) b.classList.add("correct");
