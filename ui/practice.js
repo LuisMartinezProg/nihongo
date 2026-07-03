@@ -5,6 +5,8 @@
 
 import { renderQuiz } from "./quiz.js";
 import { renderPronunciation } from "./pronunciation.js";
+import { t } from "../core/i18n.js";
+import { renderLangSwitchHTML, bindLangSwitch } from "./langSwitch.js";
 
 let mode = "mcq"; // "mcq" | "voice" — se reinicia a "mcq" al recargar la app
 let focusedPool = null; // null = práctica normal con todos los kana
@@ -26,26 +28,28 @@ export function renderPractice(container, onNavigate) {
   container.innerHTML = `
     <header class="app-header">
       <button class="back-btn" id="btn-back">←</button>
-      <h2 class="screen-title">Practicar</h2>
+      <h2 class="screen-title">${t("practice_title")}</h2>
+      ${renderLangSwitchHTML()}
     </header>
 
     ${
       focusedPool
         ? `<div class="focused-banner">
-             <span>🎯 Modo enfocado · ${focusedPool.length} caracteres</span>
-             <button id="btn-exit-focused">Salir</button>
+             <span>${t("practice_focused_banner", { count: focusedPool.length })}</span>
+             <button id="btn-exit-focused">${t("practice_exit")}</button>
            </div>`
         : ""
     }
 
     <div class="mode-toggle">
-      <button class="mode-btn ${mode === "mcq" ? "active" : ""}" data-mode="mcq">Escribir</button>
-      <button class="mode-btn ${mode === "voice" ? "active" : ""}" data-mode="voice">Hablar</button>
+      <button class="mode-btn ${mode === "mcq" ? "active" : ""}" data-mode="mcq">${t("practice_mode_write")}</button>
+      <button class="mode-btn ${mode === "voice" ? "active" : ""}" data-mode="voice">${t("practice_mode_speak")}</button>
     </div>
 
     <div id="practice-content"></div>
   `;
 
+  bindLangSwitch(container);
   container.querySelector("#btn-back").addEventListener("click", () => onNavigate("home"));
 
   container.querySelector("#btn-exit-focused")?.addEventListener("click", () => {
