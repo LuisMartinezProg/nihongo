@@ -3,6 +3,7 @@
 // arma la navegación y decide qué pantalla mostrar.
 
 import { loadProgress, checkAndUpdateStreak } from "./core/progress.js";
+import { t } from "./core/i18n.js";
 import { renderNav } from "./ui/nav.js";
 import { renderHome } from "./ui/home.js";
 import { renderLessons } from "./ui/lessons.js";
@@ -25,6 +26,15 @@ function navigateTo(tab) {
   renderScreen();
   renderNav(activeTab, navigateTo);
   window.scrollTo(0, 0);
+}
+
+// Vuelve a pintar la pantalla activa y el nav SIN cambiar de pestaña
+// ni tocar el modo enfocado. La usa el botón de idioma (ver
+// ui/langSwitch.js) para refrescar toda la interfaz al instante
+// después de cambiar entre ES y EN.
+function refresh() {
+  renderScreen();
+  renderNav(activeTab, navigateTo);
 }
 
 function renderScreen() {
@@ -55,7 +65,7 @@ async function init() {
     window.NihonGoData.kana = await res.json();
   } catch (err) {
     console.error("[main] no se pudo cargar kana.json", err);
-    app.innerHTML = `<p class="error-msg">No se pudo cargar el contenido. Revisa que data/kana.json esté subido correctamente.</p>`;
+    app.innerHTML = `<p class="error-msg">${t("load_error")}</p>`;
     return;
   }
 
@@ -68,4 +78,4 @@ async function init() {
 init();
 
 // Expuesto para depurar desde la consola del navegador en el celular
-window.NihonGoApp = { navigateTo };
+window.NihonGoApp = { navigateTo, refresh };
