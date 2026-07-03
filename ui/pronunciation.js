@@ -11,14 +11,21 @@ import {
   isSTTSupported,
   checkPronunciation,
 } from "../services/stt.js";
+import { t } from "../core/i18n.js";
 
-const ERROR_MESSAGES = {
-  "not-allowed": "Activa el permiso del micrófono para Chrome en los ajustes del celular.",
-  "no-speech": "No se detectó tu voz. Acércate al micrófono e intenta de nuevo.",
-  network: "El reconocimiento de voz necesita conexión a internet.",
-  "audio-capture": "No se encontró un micrófono disponible.",
-  "not-supported": "Tu navegador no soporta reconocimiento de voz. Usa Chrome en Android.",
-};
+// Traduce los códigos de error que entrega services/stt.js a un
+// mensaje en el idioma activo. Los códigos en sí (not-allowed,
+// no-speech, etc.) no cambian, solo el texto que se muestra.
+function errorMessage(code) {
+  const KEY_BY_CODE = {
+    "not-allowed": "pron_err_not_allowed",
+    "no-speech": "pron_err_no_speech",
+    network: "pron_err_network",
+    "audio-capture": "pron_err_audio_capture",
+    "not-supported": "pron_err_not_supported",
+  };
+  return t(KEY_BY_CODE[code] || "pron_generic_error");
+}
 
 let currentChar = null;
 let recordedThisRound = false;
@@ -27,7 +34,7 @@ let recordedThisRound = false;
 // salen las preguntas (modo enfocado de práctica).
 export function renderPronunciation(container, pool) {
   if (!isSTTSupported()) {
-    container.innerHTML = `<p class="error-msg">${ERROR_MESSAGES["not-supported"]}</p>`;
+    container.innerHTML = `<p class="error-msg">${errorMessage("not-supported")}</p>`;
     return;
   }
   nextPronQuestion(container, pool);
@@ -42,10 +49,10 @@ function nextPronQuestion(container, pool) {
   recordedThisRound = false;
 
   container.innerHTML = `
-    <p class="quiz-instruction">Pronuncia este carácter en voz alta</p>
+    <p class="quiz-instruction">${t("pron_instruction")}</p>
 
     <section class="card quiz-card">
-      <button class="quiz-char-btn" id="btn-hint" aria-label="Escuchar ejemplo">
+      <button class="quiz-char-btn" id="btn-hint" aria-label="${t("pron_hint_aria")}">
         <span class="quiz-char">${question.char}</span>
         <span class="speaker-icon">🔊</span>
       </button>
@@ -53,7 +60,7 @@ function nextPronQuestion(container, pool) {
 
     <button class="mic-btn" id="btn-mic">
       <span class="mic-icon">🎤</span>
-      <span class="mic-label">Toca y habla</span>
+      <span class="mic-label">${t("pron_tap_to_speak")}</span>
     </button>
 
     <p class="quiz-feedback" id="quiz-feedback"></p>
@@ -72,7 +79,7 @@ function handleMicTap(container, question, micBtn, pool) {
   feedback.className = "quiz-feedback";
 
   micBtn.classList.add("listening");
-  micBtn.querySelector(".mic-label").textContent = "Escuchando...";
+  micBtn.querySelector(".mic-label").textContent = t("pron_listening");
 
   startListening({
     onResult: (alternatives) => {
@@ -80,12 +87,12 @@ function handleMicTap(container, question, micBtn, pool) {
       showFeedback(container, question, correct, alternatives[0] || "", pool);
     },
     onError: (err) => {
-      feedback.textContent = ERROR_MESSAGES[err] || "Hubo un error, intenta de nuevo.";
+      feedback.textContent = errorMessage(err);
       feedback.className = "quiz-feedback feedback-incorrect";
     },
     onEnd: () => {
       micBtn.classList.remove("listening");
-      micBtn.querySelector(".mic-label").textContent = "Toca y habla";
+      micBtn.querySelector(".mic-label").textContent = t("pron_tap_to_speak");
     },
   });
 }
@@ -95,12 +102,12 @@ function showFeedback(container, question, correct, heard, pool) {
   const actions = container.querySelector("#pron-actions");
 
   if (correct) {
-    feedback.textContent = "¡Bien pronunciado! +10 XP";
+    feedback.textContent = t("pron_correct");
     feedback.className = "quiz-feedback feedback-correct";
   } else {
     feedback.textContent = heard
-      ? `Se escuchó "${heard}" — la respuesta es "${question.char}"`
-      : `No se reconoció bien. La respuesta es "${question.char}"`;
+      ? t("pron_heard", { heard, char: question.char })
+      : t("pron_not_recognized", { char: question.char });
     feedback.className = "quiz-feedback feedback-incorrect";
   }
 
@@ -115,9 +122,9 @@ function showFeedback(container, question, correct, heard, pool) {
   }
 
   actions.innerHTML = correct
-    ? `<button class="btn btn-secondary" id="btn-next">Siguiente →</button>`
-    : `<button class="btn btn-secondary" id="btn-retry">Intentar de nuevo</button>
-       <button class="btn btn-primary" id="btn-skip">Siguiente →</button>`;
+    ? `<button class="btn btn-secondary" id="btn-next">${t("pron_next")}</button>`
+    : `<button class="btn btn-secondary" id="btn-retry">${t("pron_retry")}</button>
+       <button class="btn btn-primary" id="btn-skip">${t("pron_next")}</button>`;
 
   actions.querySelector("#btn-next")?.addEventListener("click", () => nextPronQuestion(container, pool));
   actions.querySelector("#btn-skip")?.addEventListener("click", () => nextPronQuestion(container, pool));
