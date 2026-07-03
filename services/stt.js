@@ -9,6 +9,14 @@
 // No hay forma de evitar esto con Web APIs nativas sin meter un
 // modelo de reconocimiento de voz local (mucho más pesado y fuera
 // del alcance de esta fase).
+//
+// OTRA LIMITACIÓN CONOCIDA (Android Chrome):
+// A veces el reconocimiento se cierra solo, sin disparar ni
+// "resultado" ni "error" — como si nunca hubiera pasado nada. Por eso
+// abajo se usa una bandera (gotResultOrError) + un tiempo de
+// seguridad: si el micrófono se cierra y nunca llegó ni resultado ni
+// error, se avisa de todos modos. Así nunca se queda en silencio
+// total después de hablar.
 
 const SpeechRecognitionAPI =
   window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -22,6 +30,8 @@ export function isSTTSupported() {
 
 /**
  * Empieza a escuchar al usuario. Llama a los callbacks según corresponda.
+ * Garantiza que SIEMPRE se llame a onResult u onError una vez que el
+ * micrófono se cierra (nunca queda en silencio sin avisar nada).
  * @param {object} handlers - { onResult(alternatives[]), onError(code), onEnd() }
  */
 export function startListening({ onResult, onError, onEnd } = {}) {
@@ -37,7 +47,11 @@ export function startListening({ onResult, onError, onEnd } = {}) {
   recognition.interimResults = false;
   recognition.maxAlternatives = 3;
 
+  let gotResultOrError = false;
+  let safetyTimer = null;
+
   recognition.onresult = (event) => {
+    gotResultOrError = true;
     const alternatives = Array.from(event.results[0]).map((alt) =>
       alt.transcript.trim()
     );
@@ -45,18 +59,34 @@ export function startListening({ onResult, onError, onEnd } = {}) {
   };
 
   recognition.onerror = (event) => {
+    gotResultOrError = true;
     isListening = false;
     if (onError) onError(event.error);
   };
 
   recognition.onend = () => {
     isListening = false;
+    if (safetyTimer) clearTimeout(safetyTimer);
+
+    // El navegador cerró el micrófono sin avisar nada: lo tratamos
+    // como "no se detectó voz" para que el usuario siempre vea algo.
+    if (!gotResultOrError && onError) {
+      onError("no-speech");
+    }
     if (onEnd) onEnd();
   };
 
   try {
     recognition.start();
     isListening = true;
+
+    // Si el reconocimiento se queda "pegado" escuchando más de la
+    // cuenta (pasa en algunos celulares), lo cerramos nosotros mismos
+    // para que el botón no se quede atorado en "Escuchando...".
+    safetyTimer = setTimeout(() => {
+      if (isListening) recognition.stop();
+    }, 6000);
+
     return true;
   } catch (err) {
     if (onError) onError("start-failed");
