@@ -18,7 +18,9 @@ function defaultProgress() {
     streak: 0,
     lastActiveDate: null,
     kana: {}, // { "あ": { box: 0 } }
+    unlockedAchievements: [],
   };
+
 }
 
 let state = null;
@@ -132,7 +134,27 @@ export function getOverallAccuracy(kanaList) {
   const p = getProgress();
   let totalAttempts = 0;
   let totalErrors = 0;
+// ---------- Logros ----------
+// Una vez desbloqueado, un logro se queda desbloqueado aunque después
+// la racha se rompa o las stats bajen. Esto evita que el usuario sienta
+// que "pierde" algo que ya ganó.
 
+export function isAchievementUnlocked(id) {
+  return getProgress().unlockedAchievements?.includes(id) ?? false;
+}
+
+export function unlockAchievement(id) {
+  const p = getProgress();
+  if (!p.unlockedAchievements) p.unlockedAchievements = [];
+  if (p.unlockedAchievements.includes(id)) return false;
+  p.unlockedAchievements.push(id);
+  saveProgress();
+  return true;
+}
+
+export function getUnlockedAchievements() {
+  return getProgress().unlockedAchievements || [];
+}
   kanaList.forEach((k) => {
     const entry = p.kana[k.char] || {};
     totalAttempts += entry.attempts || 0;
@@ -157,4 +179,7 @@ window.NihonGoProgress = {
   recordAttempt,
   getKanaStats,
   getOverallAccuracy,
+  unlockAchievement,
+  getUnlockedAchievements,
+  
 };
