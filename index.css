@@ -1,0 +1,419 @@
+/* ============================================================
+   Sistema de diseño — Racha de Inglés
+   CSS puro, sin dependencias de build (nada de Tailwind ni CDN),
+   para que el proyecto corra con solo `npm install && npm run dev`.
+   ============================================================ */
+
+:root {
+  --color-bg: #f6f5fc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #efedfa;
+  --color-ink: #201b3d;
+  --color-ink-muted: #837fa3;
+
+  --color-primary: #5b4ef0;
+  --color-primary-dark: #4238c7;
+  --color-primary-tint: #ece9fd;
+
+  --color-flame: #ff6b4a;
+  --color-flame-tint: #ffe4dc;
+
+  --color-success: #17a672;
+  --color-success-tint: #e2f7ef;
+
+  --color-error: #e8496b;
+  --color-error-tint: #fce7ea;
+
+  --color-warning: #f2a93b;
+  --color-warning-tint: #fdf1de;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --shadow-card: 0 8px 24px -12px rgba(32, 27, 61, 0.18);
+  --shadow-button: 0 10px 20px -8px rgba(91, 78, 240, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------- Layout ---------- */
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  position: relative;
+  overflow: hidden;
+}
+.app-shell__content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.loading-screen {
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.px-5 {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.py-6 {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.stack-6 {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.stack-4 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.stack-3 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.row-3 {
+  display: flex;
+  gap: 12px;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.center-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.text-center {
+  text-align: center;
+}
+.text-muted {
+  color: var(--color-ink-muted);
+}
+.text-mono {
+  font-family: var(--font-mono);
+}
+.display-xl {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+.display-lg {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 16px 20px;
+  border-radius: var(--radius-pill);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-button);
+  width: 100%;
+}
+.btn-primary:disabled {
+  background: var(--color-surface-alt);
+  color: var(--color-ink-muted);
+  box-shadow: none;
+}
+.btn-ghost {
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: 10px 14px;
+}
+.btn-icon-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-button);
+  flex-shrink: 0;
+}
+.btn-icon-circle.is-listening {
+  background: var(--color-error);
+  animation: pulse-ring 1.1s ease-in-out infinite;
+}
+@keyframes pulse-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(232, 73, 107, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(232, 73, 107, 0);
+  }
+}
+
+/* ---------- Cards / tiles ---------- */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-card);
+}
+.stat-tile {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  padding: 14px 8px;
+  text-align: center;
+}
+.stat-tile__value {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.stat-tile__label {
+  font-size: 0.68rem;
+  color: var(--color-ink-muted);
+  margin-top: 4px;
+}
+
+/* ---------- Option buttons (ejercicios) ---------- */
+.option-btn {
+  border: 2px solid var(--color-surface-alt);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  transition: border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+}
+.option-btn.is-correct {
+  border-color: var(--color-success);
+  background: var(--color-success-tint);
+  color: var(--color-success);
+}
+.option-btn.is-wrong {
+  border-color: var(--color-error);
+  background: var(--color-error-tint);
+  color: var(--color-error);
+}
+.option-btn.is-faded {
+  opacity: 0.45;
+}
+.option-btn.is-selected-preview {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+/* ---------- Racha en forma de onda de sonido (elemento distintivo) ---------- */
+.waveform {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 40px;
+}
+.waveform__bar {
+  flex: 1;
+  background: var(--color-surface-alt);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+.waveform__bar--active {
+  background: var(--color-flame);
+}
+.waveform__bar--today.waveform__bar--active {
+  animation: bar-pulse 1.6s ease-in-out infinite;
+}
+@keyframes bar-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.waveform__bar:nth-child(1) {
+  height: 45%;
+}
+.waveform__bar:nth-child(2) {
+  height: 70%;
+}
+.waveform__bar:nth-child(3) {
+  height: 55%;
+}
+.waveform__bar:nth-child(4) {
+  height: 95%;
+}
+.waveform__bar:nth-child(5) {
+  height: 60%;
+}
+.waveform__bar:nth-child(6) {
+  height: 40%;
+}
+.waveform__bar:nth-child(7) {
+  height: 78%;
+}
+
+/* ---------- Progress ring ---------- */
+.progress-ring {
+  transform: rotate(-90deg);
+}
+.progress-ring__track {
+  stroke: var(--color-surface-alt);
+}
+.progress-ring__fill {
+  stroke: var(--color-primary);
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+/* ---------- Bottom nav ---------- */
+.bottom-nav {
+  display: flex;
+  border-top: 1px solid var(--color-surface-alt);
+  background: var(--color-surface);
+}
+.bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0 14px;
+  color: var(--color-ink-muted);
+}
+.bottom-nav__item.is-active {
+  color: var(--color-primary);
+}
+.bottom-nav__label {
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+/* ---------- Barra de progreso de la sesión ---------- */
+.session-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 8px;
+}
+.session-progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.session-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+/* ---------- Toast / banner ---------- */
+.toast-error {
+  position: absolute;
+  bottom: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-error);
+  color: white;
+  font-size: 0.75rem;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.banner-warning {
+  background: var(--color-warning-tint);
+  color: #8a5a17;
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 8px 12px;
+}
