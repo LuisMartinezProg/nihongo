@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Kotodama 言霊 — Japonés en racha</title>
+<meta name="description" content="Practica japonés a diario: reconocimiento y habla, con repetición espaciada.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@500;600;700&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12141c; --bg-grad:radial-gradient(120% 90% at 50% -10%,#1a1e2c 0%,#12141c 55%);
+  --surface:#1b1e2b; --surface-2:#242838; --surface-3:#2c3143; --line:#33384a;
+  --ink:#ede7d9; --ink-dim:#c7c2b4; --ink-muted:#8d8fa3;
+  --crimson:#c8313a; --crimson-bright:#e2454e; --crimson-muted:#7a3536;
+  --gold:#d1a54a; --gold-dim:#a5843d; --jade:#4f8f7a; --jade-bright:#63b399;
+  --shadow:0 12px 30px -12px rgba(0,0,0,.55);
+  --radius-s:10px; --radius-m:16px; --radius-l:24px;
+  --font-display:"Zen Old Mincho",serif; --font-body:"Zen Maru Gothic",sans-serif;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg-grad);background-color:var(--bg);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;overscroll-behavior-y:contain;min-height:100vh;min-height:100dvh}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:600;margin:0;letter-spacing:.01em}
+p{margin:0} button{font-family:inherit} ul{margin:0;padding:0;list-style:none}
+img,svg{display:block;max-width:100%} a{color:inherit}
+::selection{background:var(--crimson-muted);color:var(--ink)}
+button,[role="button"],.tap{-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+
+#app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(16px + var(--safe-top)) 20px 12px;gap:12px}
+.brand{display:flex;align-items:baseline;gap:8px}
+.brand-jp{font-family:var(--font-display);font-size:22px;color:var(--ink)}
+.brand-es{font-size:11px;color:var(--ink-muted);letter-spacing:.06em;text-transform:uppercase}
+.icon-btn{width:40px;height:40px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-dim);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.icon-btn svg{width:19px;height:19px}
+.icon-btn:active{background:var(--surface-3)}
+main{flex:1;padding:4px 20px calc(100px + var(--safe-bottom));overflow-y:auto}
+.view{display:none;animation:fadeUp .28s ease both}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.bottomnav{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;display:flex;background:rgba(27,30,43,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:8px 8px calc(8px + var(--safe-bottom));gap:4px;z-index:40}
+.navbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--ink-muted);padding:8px 4px 6px;border-radius:var(--radius-s);cursor:pointer;font-size:11px}
+.navbtn svg{width:22px;height:22px}
+.navbtn.active{color:var(--gold)}
+.navbtn:active{background:var(--surface-2)}
+.hidden{display:none!important}
+
+.hero{display:flex;flex-direction:column;align-items:center;padding:18px 0 8px}
+.enso-wrap{position:relative;width:220px;height:220px}
+.enso-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.enso-track{fill:none;stroke:var(--surface-2);stroke-width:14}
+.enso-progress{fill:none;stroke:url(#ensoGrad);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.22,1,.36,1);filter:url(#inkTexture)}
+.enso-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.enso-flame{width:26px;height:26px;margin-bottom:2px;color:var(--crimson-bright)}
+.enso-count{font-family:var(--font-display);font-size:52px;line-height:1;color:var(--ink)}
+.enso-label{font-size:12px;color:var(--ink-muted);margin-top:4px;letter-spacing:.03em}
+.enso-record{font-size:11px;color:var(--gold-dim);margin-top:8px}
+.goal-row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);padding:12px 16px;margin:18px 0 8px}
+.goal-bar-track{flex:1;height:8px;border-radius:5px;background:var(--surface-3);overflow:hidden}
+.goal-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:5px;transition:width .5s ease}
+.goal-text{font-size:12.5px;color:var(--ink-dim);white-space:nowrap}
+.cta-primary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(180deg,var(--crimson-bright),var(--crimson));color:#fff5ee;border:none;border-radius:var(--radius-m);padding:17px 20px;font-size:16.5px;font-weight:700;font-family:var(--font-body);box-shadow:var(--shadow);cursor:pointer;margin:10px 0 22px}
+.cta-primary:active{transform:scale(.98)}
+.cta-primary svg{width:20px;height:20px}
+.section-title{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 10px}
+.section-title h2{font-size:17px}
+.section-title .muted{font-size:12px;color:var(--ink-muted)}
+.deck-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.deck-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);padding:14px;text-align:left;cursor:pointer;position:relative;overflow:hidden}
+.deck-card:active{background:var(--surface-2)}
+.deck-card .jp{font-family:var(--font-display);font-size:26px;color:var(--gold);margin-bottom:6px}
+.deck-card .name{font-size:13.5px;font-weight:700;color:var(--ink)}
+.deck-card .meta{font-size:11px;color:var(--ink-muted);margin-top:3px}
+.deck-card .due-badge{position:absolute;top:10px;right:10px;background:var(--crimson);color:#fff;font-size:10.5px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.deck-card .mastery-track{height:5px;background:var(--surface-3);border-radius:3px;margin-top:10px;overflow:hidden}
+.deck-card .mastery-fill{height:100%;background:var(--jade-bright)}
+
+#sessionView{position:fixed;inset:0;background:var(--bg);z-index:100;display:none;flex-direction:column;max-width:480px;margin:0 auto}
+#sessionView.active{display:flex}
+.session-top{display:flex;align-items:center;gap:12px;padding:calc(14px + var(--safe-top)) 16px 10px}
+.progress-track{flex:1;height:8px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+.progress-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--crimson-muted),var(--crimson-bright));transition:width .35s ease}
+.session-counter{font-size:12px;color:var(--ink-muted);min-width:40px;text-align:right}
+.close-btn{background:none;border:none;color:var(--ink-muted);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.session-body{flex:1;display:flex;flex-direction:column;padding:10px 22px 22px;overflow-y:auto}
+.ex-kicker{font-size:12px;color:var(--gold-dim);text-align:center;letter-spacing:.05em;margin-bottom:6px;text-transform:uppercase}
+.ex-prompt{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:30vh;gap:10px}
+.ex-jp-big{font-family:var(--font-display);font-size:64px;color:var(--ink);line-height:1.1}
+.ex-jp-med{font-family:var(--font-display);font-size:34px;color:var(--ink);line-height:1.3}
+.ex-romaji{font-size:14px;color:var(--ink-muted);letter-spacing:.02em}
+.ex-es{font-size:19px;color:var(--ink-dim);font-weight:500}
+.ex-hint{font-size:12.5px;color:var(--ink-muted);margin-top:2px}
+.speaker-btn{width:64px;height:64px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.speaker-btn svg{width:28px;height:28px}
+.speaker-btn:active{background:var(--surface-3)}
+.speaker-btn.small{width:44px;height:44px}
+.speaker-btn.small svg{width:20px;height:20px}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.opt-btn{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius-m);padding:16px 10px;color:var(--ink);font-size:15px;font-weight:600;text-align:center;cursor:pointer;min-height:58px;display:flex;align-items:center;justify-content:center}
+.opt-btn:active{background:var(--surface-2)}
+.opt-btn.correct{border-color:var(--jade-bright);background:rgba(79,143,122,.18);color:var(--jade-bright)}
+.opt-btn.incorrect{border-color:var(--crimson-bright);background:rgba(200,49,58,.15);color:var(--crimson-bright)}
+.opt-btn.dim{opacity:.45}
+.opt-btn[disabled]{pointer-events:none}
+.speak-stage{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:14px}
+.mic-btn{width:88px;height:88px;border-radius:50%;background:linear-gradient(180deg,var(--crimson-bright),var(--crimson));border:none;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);cursor:pointer}
+.mic-btn svg{width:34px;height:34px}
+.mic-btn.listening{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,49,58,.5)}50%{box-shadow:0 0 0 16px rgba(200,49,58,0)}}
+.mic-status{font-size:13px;color:var(--ink-muted);min-height:18px;text-align:center}
+.transcript-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);padding:14px 16px;width:100%;text-align:center;font-size:16px;min-height:24px}
+.transcript-box.correct{border-color:var(--jade-bright);color:var(--jade-bright)}
+.transcript-box.incorrect{border-color:var(--crimson-bright);color:var(--crimson-bright)}
+.manual-row{display:flex;gap:10px;width:100%}
+.manual-btn{flex:1;padding:13px 10px;border-radius:var(--radius-s);border:1.5px solid var(--line);background:var(--surface);color:var(--ink-dim);font-size:13.5px;font-weight:600;cursor:pointer}
+.manual-btn.good.chosen{border-color:var(--jade-bright);color:var(--jade-bright);background:rgba(79,143,122,.15)}
+.manual-btn.bad.chosen{border-color:var(--crimson-bright);color:var(--crimson-bright);background:rgba(200,49,58,.12)}
+.feedback-banner{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;padding:18px 20px calc(18px + var(--safe-bottom));background:var(--surface-2);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px;transform:translateY(110%);transition:transform .32s cubic-bezier(.22,1,.36,1);z-index:120}
+.feedback-banner.show{transform:translateY(0)}
+.feedback-banner.correct{background:#1c352d;border-color:var(--jade-bright)}
+.feedback-banner.incorrect{background:#34191b;border-color:var(--crimson-bright)}
+.feedback-text{display:flex;flex-direction:column;gap:2px}
+.feedback-title{font-weight:700;font-size:15px}
+.feedback-sub{font-size:12.5px;color:var(--ink-muted)}
+.feedback-next{background:var(--ink);color:#161616;border:none;border-radius:12px;padding:12px 22px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+
+.summary-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding-bottom:10vh}
+.summary-ring{width:150px;height:150px;margin-bottom:10px}
+.summary-title{font-size:19px;font-weight:700;margin-top:6px}
+.summary-stats{display:flex;gap:22px;margin-top:18px}
+.summary-stat b{display:block;font-size:20px;font-family:var(--font-display);color:var(--gold)}
+.summary-stat span{font-size:11px;color:var(--ink-muted)}
+.summary-xp{margin-top:14px;font-size:13px;color:var(--jade-bright)}
+
+.stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);padding:14px}
+.stat-card b{display:block;font-family:var(--font-display);font-size:26px}
+.stat-card span{font-size:11.5px;color:var(--ink-muted)}
+.mastery-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.mastery-row:last-child{border-bottom:none}
+.mastery-row .jp{font-family:var(--font-display);width:34px;font-size:18px;color:var(--gold);flex-shrink:0}
+.mastery-row .info{flex:1}
+.mastery-row .name{font-size:13px;margin-bottom:5px}
+.mastery-row .track{height:6px;background:var(--surface-3);border-radius:4px;overflow:hidden}
+.mastery-row .fill{height:100%;background:linear-gradient(90deg,var(--jade),var(--jade-bright))}
+.mastery-row .pct{font-size:12px;color:var(--ink-muted);width:34px;text-align:right;flex-shrink:0}
+.heatmap{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-top:10px}
+.heat-cell{width:100%;aspect-ratio:1;border-radius:2px;background:var(--surface-2)}
+.heat-cell[data-level="1"]{background:#3a4a3f}
+.heat-cell[data-level="2"]{background:#3f6a56}
+.heat-cell[data-level="3"]{background:var(--jade)}
+.heat-cell[data-level="4"]{background:var(--jade-bright)}
+.heatmap-legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10.5px;color:var(--ink-muted);justify-content:flex-end}
+.heatmap-legend .heat-cell{width:11px;height:11px}
+
+.settings-group{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);margin-bottom:16px;overflow:hidden}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border-bottom:1px solid var(--line)}
+.settings-row:last-child{border-bottom:none}
+.settings-row .label{font-size:14px}
+.settings-row .sublabel{font-size:11.5px;color:var(--ink-muted);margin-top:2px}
+.settings-row.link{cursor:pointer}
+.settings-row.link:active{background:var(--surface-2)}
+.settings-row.danger .label{color:var(--crimson-bright)}
+.switch{width:46px;height:27px;background:var(--surface-3);border-radius:14px;position:relative;cursor:pointer;border:1px solid var(--line);flex-shrink:0}
+.switch::after{content:'';position:absolute;width:21px;height:21px;border-radius:50%;background:var(--ink-muted);top:2px;left:2px;transition:all .2s ease}
+.switch.on{background:var(--jade);border-color:var(--jade)}
+.switch.on::after{left:21px;background:#fff}
+.goal-picker{display:flex;gap:8px}
+.goal-chip{flex:1;padding:10px 4px;text-align:center;border-radius:10px;border:1.5px solid var(--line);background:var(--surface-2);font-size:13px;font-weight:700;cursor:pointer;color:var(--ink-dim)}
+.goal-chip.active{border-color:var(--gold);color:var(--gold);background:rgba(209,165,74,.1)}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(10,11,16,.72);display:none;align-items:flex-end;justify-content:center;z-index:200;backdrop-filter:blur(2px)}
+.modal-overlay.show{display:flex}
+.modal-sheet{background:var(--surface);border:1px solid var(--line);border-radius:22px 22px 0 0;max-width:480px;width:100%;max-height:82vh;overflow-y:auto;padding:22px 22px calc(26px + var(--safe-bottom));animation:slideUp .3s cubic-bezier(.22,1,.36,1) both}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.modal-sheet h3{font-size:19px;margin-bottom:14px}
+.modal-sheet p{font-size:14px;line-height:1.6;color:var(--ink-dim);margin-bottom:12px}
+.modal-sheet .method-item{margin-bottom:16px}
+.modal-sheet .method-item .m-title{font-size:13.5px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.modal-close{width:100%;padding:14px;border-radius:var(--radius-m);border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font-weight:700;margin-top:6px;cursor:pointer}
+.modal-btn-row{display:flex;gap:10px;margin-top:18px}
+.modal-btn-row button{flex:1;padding:14px;border-radius:var(--radius-m);font-weight:700;font-size:14px;cursor:pointer}
+.modal-btn-row .cancel{background:var(--surface-2);border:1px solid var(--line);color:var(--ink)}
+.modal-btn-row .confirm{background:var(--crimson);border:none;color:#fff}
+.toast{position:fixed;top:calc(14px + var(--safe-top));left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surface-3);border:1px solid var(--line);color:var(--ink);padding:11px 18px;border-radius:30px;font-size:13px;z-index:300;opacity:0;transition:all .25s ease;pointer-events:none;max-width:88%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.deck-detail-header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.deck-detail-header .jp{font-family:var(--font-display);font-size:40px;color:var(--gold)}
+.subdeck-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-m);padding:14px 16px;margin-bottom:10px;cursor:pointer}
+.subdeck-row:active{background:var(--surface-2)}
+.subdeck-row .name{font-size:14px;font-weight:600}
+.subdeck-row .meta{font-size:11.5px;color:var(--ink-muted);margin-top:3px}
+.subdeck-row .chev{color:var(--ink-muted);width:18px;height:18px;flex-shrink:0}
+.back-row{display:flex;align-items:center;gap:10px;margin:4px 0 14px;cursor:pointer;color:var(--ink-dim)}
+.back-row svg{width:18px;height:18px}
+.back-row span{font-size:13.5px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="ensoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e2454e"/><stop offset="55%" stop-color="#c8313a"/><stop offset="100%" stop-color="#d1a54a"/>
+    </linearGradient>
+    <filter id="inkTexture" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.09" numOctaves="2" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+<div id="app">
+  <div class="topbar">
+    <div class="brand"><span class="brand-jp">言霊</span><span class="brand-es">Kotodama</span></div>
+    <button class="icon-btn" id="infoBtn" aria-label="Cómo funciona">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><circle cx="12" cy="8" r=".5" fill="currentColor"/></svg>
+    </button>
+  </div>
+  <main>
+    <section class="view active" id="view-home">
+      <div class="hero">
+        <div class="enso-wrap">
+          <svg viewBox="0 0 220 220">
+            <circle class="enso-track" cx="110" cy="110" r="95"/>
+            <circle class="enso-progress" id="ensoProgress" cx="110" cy="110" r="95"/>
+          </svg>
+          <div class="enso-center">
+            <svg class="enso-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3-3 4-3 8a3 3 0 006 0c1.5 1 2 3 2 4.5A5.5 5.5 0 0112 20a5.5 5.5 0 01-5-7.8C8 10 12 8 12 2z"/></svg>
+            <div class="enso-count" id="streakCount">0</div>
+            <div class="enso-label" id="streakLabel">días seguidos</div>
+          </div>
+        </div>
+        <div class="enso-record" id="streakRecord">récord: 0 días</div>
+      </div>
+      <div class="goal-row">
+        <span class="goal-text" id="goalText">0 / 15 hoy</span>
+        <div class="goal-bar-track"><div class="goal-bar-fill" id="goalBarFill" style="width:0%"></div></div>
+      </div>
+      <button class="cta-primary" id="startMixedBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+        <span id="startMixedLabel">Practicar ahora</span>
+      </button>
+      <div class="section-title"><h2>Tus mazos</h2><span class="muted" id="totalDueLabel"></span></div>
+      <div class="deck-grid" id="deckGrid"></div>
+    </section>
+
+    <section class="view" id="view-deck">
+      <div class="back-row" id="deckBackBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Mazos</span>
+      </div>
+      <div class="deck-detail-header">
+        <span class="jp" id="deckDetailJp">あ</span>
+        <div><h2 id="deckDetailName">Hiragana</h2><span class="muted" id="deckDetailMeta" style="font-size:12px;color:var(--ink-muted)"></span></div>
+      </div>
+      <button class="cta-primary" id="deckDetailPracticeAll" style="margin-top:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+        <span>Practicar todo este grupo</span>
+      </button>
+      <div class="section-title"><h2>Subgrupos</h2></div>
+      <div id="subdeckList"></div>
+    </section>
+
+    <section class="view" id="view-stats">
+      <div class="section-title" style="margin-top:6px;"><h2>Tu progreso</h2></div>
+      <div class="stat-cards">
+        <div class="stat-card"><b id="statTotalReps">0</b><span>repasos totales</span></div>
+        <div class="stat-card"><b id="statAccuracy">0%</b><span>precisión</span></div>
+        <div class="stat-card"><b id="statMastered">0</b><span>elementos dominados</span></div>
+        <div class="stat-card"><b id="statLongest">0</b><span>racha más larga</span></div>
+      </div>
+      <div class="section-title"><h2>Dominio por mazo</h2></div>
+      <div id="masteryList"></div>
+      <div class="section-title"><h2>Constancia</h2><span class="muted">últimas 13 semanas</span></div>
+      <div class="heatmap" id="heatmap"></div>
+      <div class="heatmap-legend">
+        <span>menos</span>
+        <div class="heat-cell" data-level="0"></div><div class="heat-cell" data-level="1"></div>
+        <div class="heat-cell" data-level="2"></div><div class="heat-cell" data-level="3"></div>
+        <div class="heat-cell" data-level="4"></div>
+        <span>más</span>
+      </div>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="section-title" style="margin-top:6px;"><h2>Ajustes</h2></div>
+      <div class="settings-group">
+        <div class="settings-row"><div><div class="label">Meta diaria</div><div class="sublabel">Repasos para mantener tu racha</div></div></div>
+        <div class="settings-row" style="display:block;"><div class="goal-picker" id="goalPicker"></div></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="label">Ejercicios de habla</div><div class="sublabel">Usa el micrófono para practicar pronunciación</div></div>
+          <div class="switch" id="toggleSpeaking"></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="label">Sonido</div><div class="sublabel">Pronunciación automática en los ejercicios</div></div>
+          <div class="switch" id="toggleSound"></div>
+        </div>
+        <div class="settings-row"><div><div class="label">Velocidad de voz</div><div class="sublabel">Qué tan rápido se lee el japonés</div></div></div>
+        <div class="settings-row" style="display:block;">
+          <div class="goal-picker" id="ratePicker">
+            <div class="goal-chip" data-rate="0.7">Lenta</div>
+            <div class="goal-chip" data-rate="0.85">Normal</div>
+            <div class="goal-chip" data-rate="1">Nativa</div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-row link" id="openMethodology">
+          <div class="label">Cómo funciona (metodología)</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-row danger link" id="resetProgressBtn"><div class="label">Reiniciar progreso</div></div>
+      </div>
+      <p style="text-align:center;font-size:11px;color:var(--ink-muted);margin-top:6px;">Kotodama · datos guardados solo en este dispositivo</p>
+    </section>
+  </main>
+
+  <div class="bottomnav">
+    <button class="navbtn active" data-view="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Inicio
+    </button>
+    <button class="navbtn" data-view="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>Progreso
+    </button>
+    <button class="navbtn" data-view="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Ajustes
+    </button>
+  </div>
+
+  <div id="sessionView">
+    <div class="session-top">
+      <button class="close-btn" id="sessionCloseBtn" aria-label="Salir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <div class="progress-track"><div class="progress-fill" id="sessionProgressFill" style="width:0%"></div></div>
+      <div class="session-counter" id="sessionCounter">0/0</div>
+    </div>
+    <div class="session-body" id="sessionBody"></div>
+  </div>
+
+  <div class="feedback-banner" id="feedbackBanner">
+    <div class="feedback-text"><span class="feedback-title" id="feedbackTitle">¡Correcto!</span><span class="feedback-sub" id="feedbackSub"></span></div>
+    <button class="feedback-next" id="feedbackNextBtn">Continuar</button>
+  </div>
+
+  <div class="modal-overlay" id="methodologyModal">
+    <div class="modal-sheet">
+      <h3>Por qué Kotodama funciona así</h3>
+      <div class="method-item"><div class="m-title">🔁 Repetición espaciada</div><p>Cada palabra se repasa justo antes de que la olvides. Los intervalos crecen cuando aciertas y se acortan cuando fallas — el mismo principio detrás de Anki y SuperMemo, que en estudios ha triplicado la retención a largo plazo frente a repasar todo de una vez.</p></div>
+      <div class="method-item"><div class="m-title">🎯 Recuerdo activo, no lectura pasiva</div><p>Nunca solo "lees" una palabra: siempre tienes que reconocerla, escucharla o decirla en voz alta. Este "efecto de la prueba" genera memorias más fuertes que releer, y por eso Kotodama sigue repasando incluso lo que ya dominas, en vez de descartarlo.</p></div>
+      <div class="method-item"><div class="m-title">🗣️ Habla con retroalimentación real</div><p>Las secciones de habla usan reconocimiento de voz del navegador para practicar pronunciación real ("shadowing"), no solo teoría. La investigación la vincula con mejoras en fluidez, prosodia y comprensibilidad.</p></div>
+      <div class="method-item"><div class="m-title">🔥 Racha diaria, no maratones</div><p>Practicar un poco cada día construye el hábito mejor que sesiones largas y esporádicas. Por eso la racha solo cuenta si completas repasos reales, no basta con abrir la app.</p></div>
+      <button class="modal-close" id="closeMethodology">Entendido</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="resetModal">
+    <div class="modal-sheet">
+      <h3>¿Reiniciar todo tu progreso?</h3>
+      <p>Se borrará tu racha, historial y el avance de repetición espaciada de todos los mazos. Esta acción no se puede deshacer.</p>
+      <div class="modal-btn-row"><button class="cancel" id="cancelReset">Cancelar</button><button class="confirm" id="confirmReset">Sí, reiniciar</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="micDeniedModal">
+    <div class="modal-sheet">
+      <h3>No se pudo usar el micrófono</h3>
+      <p id="micDeniedText">Kotodama no tiene acceso al micrófono, o tu navegador no soporta reconocimiento de voz. Puedes activar el permiso desde la configuración del sitio en Chrome, o desactivar los ejercicios de habla en Ajustes y seguir practicando con reconocimiento y audio.</p>
+      <button class="modal-close" id="closeMicDenied">Entendido</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+'use strict';
+function mk(id, jp, romaji, es){ return { id, jp, romaji, es: es || null }; }
+
+const HIRA_BASE=[["ha_a","あ","a"],["ha_i","い","i"],["ha_u","う","u"],["ha_e","え","e"],["ha_o","お","o"],["ha_ka","か","ka"],["ha_ki","き","ki"],["ha_ku","く","ku"],["ha_ke","け","ke"],["ha_ko","こ","ko"],["ha_sa","さ","sa"],["ha_shi","し","shi"],["ha_su","す","su"],["ha_se","せ","se"],["ha_so","そ","so"],["ha_ta","た","ta"],["ha_chi","ち","chi"],["ha_tsu","つ","tsu"],["ha_te","て","te"],["ha_to","と","to"],["ha_na","な","na"],["ha_ni","に","ni"],["ha_nu","ぬ","nu"],["ha_ne","ね","ne"],["ha_no","の","no"],["ha_ha2","は","ha"],["ha_hi","ひ","hi"],["ha_fu","ふ","fu"],["ha_he","へ","he"],["ha_ho","ほ","ho"],["ha_ma","ま","ma"],["ha_mi","み","mi"],["ha_mu","む","mu"],["ha_me","め","me"],["ha_mo","も","mo"],["ha_ya","や","ya"],["ha_yu","ゆ","yu"],["ha_yo","よ","yo"],["ha_ra","ら","ra"],["ha_ri","り","ri"],["ha_ru","る","ru"],["ha_re","れ","re"],["ha_ro","ろ","ro"],["ha_wa","わ","wa"],["ha_wo","を","wo"],["ha_n","ん","n"]].map(([id,jp,romaji])=>mk(id,jp,romaji));
+
+const HIRA_DAKU=[["hd_ga","が","ga"],["hd_gi","ぎ","gi"],["hd_gu","ぐ","gu"],["hd_ge","げ","ge"],["hd_go","ご","go"],["hd_za","ざ","za"],["hd_ji","じ","ji"],["hd_zu","ず","zu"],["hd_ze","ぜ","ze"],["hd_zo","ぞ","zo"],["hd_da","だ","da"],["hd_dji","ぢ","ji"],["hd_dzu","づ","zu"],["hd_de","で","de"],["hd_do","ど","do"],["hd_ba","ば","ba"],["hd_bi","び","bi"],["hd_bu","ぶ","bu"],["hd_be","べ","be"],["hd_bo","ぼ","bo"],["hd_pa","ぱ","pa"],["hd_pi","ぴ","pi"],["hd_pu","ぷ","pu"],["hd_pe","ぺ","pe"],["hd_po","ぽ","po"]].map(([id,jp,romaji])=>mk(id,jp,romaji));
+
+const HIRA_YOUON=[["hy_kya","きゃ","kya"],["hy_kyu","きゅ","kyu"],["hy_kyo","きょ","kyo"],["hy_sha","しゃ","sha"],["hy_shu","しゅ","shu"],["hy_sho","しょ","sho"],["hy_cha","ちゃ","cha"],["hy_chu","ちゅ","chu"],["hy_cho","ちょ","cho"],["hy_nya","にゃ","nya"],["hy_nyu","にゅ","nyu"],["hy_nyo","にょ","nyo"],["hy_hya","ひゃ","hya"],["hy_hyu","ひゅ","hyu"],["hy_hyo","ひょ","hyo"],["hy_mya","みゃ","mya"],["hy_myu","みゅ","myu"],["hy_myo","みょ","myo"],["hy_rya","りゃ","rya"],["hy_ryu","りゅ","ryu"],["hy_ryo","りょ","ryo"],["hy_gya","ぎゃ","gya"],["hy_gyu","ぎゅ","gyu"],["hy_gyo","ぎょ","gyo"],["hy_ja","じゃ","ja"],["hy_ju","じゅ","ju"],["hy_jo","じょ","jo"],["hy_bya","びゃ","bya"],["hy_byu","びゅ","byu"],["hy_byo","びょ","byo"],["hy_pya","ぴゃ","pya"],["hy_pyu","ぴゅ","pyu"],["hy_pyo","ぴょ","pyo"]].map(([id,jp,romaji])=>mk(id,jp,romaji));
+
+const KATA_BASE=[["ka_a","ア","a"],["ka_i","イ","i"],["ka_u","ウ","u"],["ka_e","エ","e"],["ka_o","オ","o"],["ka_ka","カ","ka"],["ka_ki","キ","ki"],["ka_ku","ク","ku"],["ka_ke","ケ","ke"],["ka_ko","コ","ko"],["ka_sa","サ","sa"],["ka_shi","シ","shi"],["ka_su","ス","su"],["ka_se","セ","se"],["ka_so","ソ","so"],["ka_ta","タ","ta"],["ka_chi","チ","chi"],["ka_tsu","ツ","tsu"],["ka_te","テ","te"],["ka_to","ト","to"],["ka_na","ナ","na"],["ka_ni","ニ","ni"],["ka_nu","ヌ","nu"],["ka_ne","ネ","ne"],["ka_no","ノ","no"],["ka_ha2","ハ","ha"],["ka_hi","ヒ","hi"],["ka_fu","フ","fu"],["ka_he","ヘ","he"],["ka_ho","ホ","ho"],["ka_ma","マ","ma"],["ka_mi","ミ","mi"],["ka_mu","ム","mu"],["ka_me","メ","me"],["ka_mo","モ","mo"],["ka_ya","ヤ","ya"],["ka_yu","ユ","yu"],["ka_yo","ヨ","yo"],["ka_ra","ラ","ra"],["ka_ri","リ","ri"],["ka_ru","ル","ru"],["ka_re","レ","re"],["ka_ro","ロ","ro"],["ka_wa","ワ","wa"],["ka_wo","ヲ","wo"],["ka_n","ン","n"]].map(([id,jp,romaji])=>mk(id,jp,romaji));
+
+const KATA_DAKU=[["kd_ga","ガ","ga"],["kd_gi","ギ","gi"],["kd_gu","グ","gu"],["kd_ge","ゲ","ge"],["kd_go","ゴ","go"],["kd_za","ザ","za"],["kd_ji","ジ","ji"],["kd_zu","ズ","zu"],["kd_ze","ゼ","ze"],["kd_zo","ゾ","zo"],["kd_da","ダ","da"],["kd_dji","ヂ","ji"],["kd_dzu","ヅ","zu"],["kd_de","デ","de"],["kd_do","ド","do"],["kd_ba","バ","ba"],["kd_bi","ビ","bi"],["kd_bu","ブ","bu"],["kd_be","ベ","be"],["kd_bo","ボ","bo"],["kd_pa","パ","pa"],["kd_pi","ピ","pi"],["kd_pu","プ","pu"],["kd_pe","ペ","pe"],["kd_po","ポ","po"]].map(([id,jp,romaji])=>mk(id,jp,romaji));
+
+const KATA_YOUON=[["ky_kya","キャ","kya"],["ky_kyu","キュ","kyu"],["ky_kyo","キョ","kyo"],["ky_sha","シャ","sha"],["ky_shu","シュ","shu"],["ky_sho","ショ","sho"],["ky_cha","チャ","cha"],["ky_chu","チュ","chu"],["ky_cho","チョ","cho"],["ky_nya","ニャ","nya"],["ky_nyu","ニュ","nyu"],["ky_nyo","ニョ","nyo"],["ky_hya","ヒャ","hya"],["ky_hyu","ヒュ","hyu"],["ky_hyo","ヒョ","hyo"],["ky_mya","ミャ","mya"],["ky_myu","ミュ","myu"],["ky_myo","ミョ","myo"],["ky_rya","リャ","rya"],["ky_ryu","リュ","ryu"],["ky_ryo","リョ","ryo"],["ky_gya","ギャ","gya"],["ky_gyu","ギュ","gyu"],["ky_gyo","ギョ","gyo"],["ky_ja","ジャ","ja"],["ky_ju","ジュ","ju"],["ky_jo","ジョ","jo"],["ky_bya","ビャ","bya"],["ky_byu","ビュ","byu"],["ky_byo","ビョ","byo"],["ky_pya","ピャ","pya"],["ky_pyu","ピュ","pyu"],["ky_pyo","ピョ","pyo"]].map(([id,jp,romaji])=>mk(id,jp,romaji));
+
+const KATA_EXT=[["ke_fa","ファ","fa"],["ke_fi","フィ","fi"],["ke_fe","フェ","fe"],["ke_fo","フォ","fo"],["ke_ti","ティ","ti"],["ke_di","ディ","di"],["ke_che","チェ","che"],["ke_she","シェ","she"],["ke_je","ジェ","je"],["ke_wi","ウィ","wi"]].map(([id,jp,romaji])=>mk(id,jp,romaji));
+
+const VOCAB_SALUDOS=[["vs_ohayo","おはよう","ohayou","buenos días"],["vs_konnichiwa","こんにちは","konnichiwa","hola / buenas tardes"],["vs_konbanwa","こんばんは","konbanwa","buenas noches (saludo)"],["vs_sayonara","さようなら","sayounara","adiós"],["vs_arigatou","ありがとう","arigatou","gracias"],["vs_sumimasen","すみません","sumimasen","disculpe / lo siento"],["vs_hai","はい","hai","sí"],["vs_iie","いいえ","iie","no"],["vs_onegai","おねがいします","onegaishimasu","por favor"],["vs_oyasumi","おやすみなさい","oyasuminasai","buenas noches (al dormir)"],["vs_hajimemashite","はじめまして","hajimemashite","mucho gusto"],["vs_genki","げんき","genki","estar bien / con energía"],["vs_douitashimashite","どういたしまして","dou itashimashite","de nada"],["vs_ganbatte","がんばって","ganbatte","¡ánimo! / esfuérzate"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_NUMEROS=[["vn_1","いち","ichi","uno"],["vn_2","に","ni","dos"],["vn_3","さん","san","tres"],["vn_4","よん","yon","cuatro"],["vn_5","ご","go","cinco"],["vn_6","ろく","roku","seis"],["vn_7","なな","nana","siete"],["vn_8","はち","hachi","ocho"],["vn_9","きゅう","kyuu","nueve"],["vn_10","じゅう","juu","diez"],["vn_100","ひゃく","hyaku","cien"],["vn_1000","せん","sen","mil"],["vn_0","ゼロ","zero","cero"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_FAMILIA=[["vf_kazoku","かぞく","kazoku","familia"],["vf_otousan","おとうさん","otousan","padre"],["vf_okaasan","おかあさん","okaasan","madre"],["vf_ani","あに","ani","hermano mayor"],["vf_ane","あね","ane","hermana mayor"],["vf_otouto","おとうと","otouto","hermano menor"],["vf_imouto","いもうと","imouto","hermana menor"],["vf_kodomo","こども","kodomo","niño / hijo"],["vf_sofu","そふ","sofu","abuelo"],["vf_sobo","そぼ","sobo","abuela"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_COMIDA=[["vc_gohan","ごはん","gohan","arroz / comida"],["vc_pan","パン","pan","pan"],["vc_mizu","みず","mizu","agua"],["vc_ocha","おちゃ","ocha","té"],["vc_koohii","コーヒー","koohii","café"],["vc_sakana","さかな","sakana","pescado"],["vc_niku","にく","niku","carne"],["vc_yasai","やさい","yasai","verdura"],["vc_kudamono","くだもの","kudamono","fruta"],["vc_tamago","たまご","tamago","huevo"],["vc_sushi","すし","sushi","sushi"],["vc_raamen","ラーメン","raamen","ramen"],["vc_misoshiru","みそしる","misoshiru","sopa de miso"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_COLORES=[["vco_aka","あか","aka","rojo"],["vco_ao","あお","ao","azul"],["vco_kiiro","きいろ","kiiro","amarillo"],["vco_midori","みどり","midori","verde"],["vco_shiro","しろ","shiro","blanco"],["vco_kuro","くろ","kuro","negro"],["vco_chairo","ちゃいろ","chairo","marrón"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_ANIMALES=[["va_inu","いぬ","inu","perro"],["va_neko","ねこ","neko","gato"],["va_tori","とり","tori","pájaro"],["va_uma","うま","uma","caballo"],["va_ushi","うし","ushi","vaca"],["va_buta","ぶた","buta","cerdo"],["va_usagi","うさぎ","usagi","conejo"],["va_zou","ぞう","zou","elefante"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_TIEMPO=[["vt_kyou","きょう","kyou","hoy"],["vt_ashita","あした","ashita","mañana (día)"],["vt_kinou","きのう","kinou","ayer"],["vt_ima","いま","ima","ahora"],["vt_asa","あさ","asa","mañana (parte del día)"],["vt_yoru","よる","yoru","noche"],["vt_getsu","げつようび","getsuyoubi","lunes"],["vt_ka","かようび","kayoubi","martes"],["vt_sui","すいようび","suiyoubi","miércoles"],["vt_moku","もくようび","mokuyoubi","jueves"],["vt_kin","きんようび","kinyoubi","viernes"],["vt_do","どようび","doyoubi","sábado"],["vt_nichi","にちようび","nichiyoubi","domingo"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_VERBOS=[["vv_taberu","たべる","taberu","comer"],["vv_nomu","のむ","nomu","beber"],["vv_miru","みる","miru","ver"],["vv_kiku","きく","kiku","escuchar / preguntar"],["vv_hanasu","はなす","hanasu","hablar"],["vv_yomu","よむ","yomu","leer"],["vv_kaku","かく","kaku","escribir"],["vv_iku","いく","iku","ir"],["vv_kuru","くる","kuru","venir"],["vv_neru","ねる","neru","dormir"],["vv_okiru","おきる","okiru","despertarse"],["vv_benkyou","べんきょうする","benkyou suru","estudiar"],["vv_asobu","あそぶ","asobu","jugar"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_ADJETIVOS=[["vad_ookii","おおきい","ookii","grande"],["vad_chiisai","ちいさい","chiisai","pequeño"],["vad_atarashii","あたらしい","atarashii","nuevo"],["vad_furui","ふるい","furui","viejo"],["vad_ii","いい","ii","bueno"],["vad_warui","わるい","warui","malo"],["vad_takai","たかい","takai","caro / alto"],["vad_yasui","やすい","yasui","barato"],["vad_oishii","おいしい","oishii","delicioso"],["vad_tanoshii","たのしい","tanoshii","divertido"],["vad_muzukashii","むずかしい","muzukashii","difícil"],["vad_kantan","かんたん","kantan","fácil / sencillo"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_LUGARES=[["vl_gakkou","がっこう","gakkou","escuela"],["vl_ie","いえ","ie","casa"],["vl_eki","えき","eki","estación"],["vl_byouin","びょういん","byouin","hospital"],["vl_kouen","こうえん","kouen","parque"],["vl_mise","みせ","mise","tienda"],["vl_resutoran","レストラン","resutoran","restaurante"],["vl_toshokan","としょかん","toshokan","biblioteca"],["vl_kuukou","くうこう","kuukou","aeropuerto"],["vl_ginkou","ぎんこう","ginkou","banco"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const VOCAB_OBJETOS=[["vo_hon","ほん","hon","libro"],["vo_pen","ペン","pen","bolígrafo"],["vo_tsukue","つくえ","tsukue","escritorio"],["vo_isu","いす","isu","silla"],["vo_denwa","でんわ","denwa","teléfono"],["vo_tokei","とけい","tokei","reloj"],["vo_kaban","かばん","kaban","bolso / mochila"],["vo_kuruma","くるま","kuruma","coche"],["vo_jitensha","じてんしゃ","jitensha","bicicleta"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const FRASES=[["fr_konore","これはなんですか","kore wa nan desu ka","¿qué es esto?"],["fr_toire","トイレはどこですか","toire wa doko desu ka","¿dónde está el baño?"],["fr_ikura","いくらですか","ikura desu ka","¿cuánto cuesta?"],["fr_wakarimasen","わかりません","wakarimasen","no entiendo"],["fr_mouichido","もういちどおねがいします","mou ichido onegaishimasu","una vez más, por favor"],["fr_namae","おなまえはなんですか","o-namae wa nan desu ka","¿cómo te llamas?"],["fr_genkidesu","げんきです","genki desu","estoy bien"],["fr_daijoubu","だいじょうぶです","daijoubu desu","está bien / estoy bien"],["fr_tetsudatte","てつだってください","tetsudatte kudasai","ayúdame, por favor"],["fr_ogenki","おげんきですか","o-genki desu ka","¿cómo está usted?"],["fr_dokokara","どこからきましたか","doko kara kimashita ka","¿de dónde vienes?"],["fr_itterasshai","いってらっしゃい","itterasshai","que te vaya bien"],["fr_okaeri","おかえりなさい","okaerinasai","bienvenido de vuelta"],["fr_shitsurei","しつれいします","shitsurei shimasu","con permiso / disculpe"],["fr_tanoshimi","たのしみです","tanoshimi desu","tengo ganas / qué emoción"],["fr_oishiisou","おいしそうです","oishisou desu","se ve delicioso"],["fr_nanji","いまなんじですか","ima nanji desu ka","¿qué hora es?"],["fr_suki","すきです","suki desu","me gusta"]].map(([id,jp,romaji,es])=>mk(id,jp,romaji,es));
+
+const DECKS={
+  hiragana:{name:"Hiragana",jp:"あ",group:"kana",sub:{hb:{name:"Básico (gojūon)",items:HIRA_BASE},hd:{name:"Con diacríticos",items:HIRA_DAKU},hy:{name:"Combinaciones (yōon)",items:HIRA_YOUON}}},
+  katakana:{name:"Katakana",jp:"ア",group:"kana",sub:{kb:{name:"Básico (gojūon)",items:KATA_BASE},kd:{name:"Con diacríticos",items:KATA_DAKU},ky:{name:"Combinaciones (yōon)",items:KATA_YOUON},ke:{name:"Extendido (sonidos extranjeros)",items:KATA_EXT}}},
+  vocabulario:{name:"Vocabulario",jp:"語",group:"vocab",sub:{v_sal:{name:"Saludos",items:VOCAB_SALUDOS},v_num:{name:"Números",items:VOCAB_NUMEROS},v_fam:{name:"Familia",items:VOCAB_FAMILIA},v_com:{name:"Comida",items:VOCAB_COMIDA},v_col:{name:"Colores",items:VOCAB_COLORES},v_ani:{name:"Animales",items:VOCAB_ANIMALES},v_tie:{name:"Tiempo y días",items:VOCAB_TIEMPO},v_ver:{name:"Verbos comunes",items:VOCAB_VERBOS},v_adj:{name:"Adjetivos comunes",items:VOCAB_ADJETIVOS},v_lug:{name:"Lugares",items:VOCAB_LUGARES},v_obj:{name:"Objetos cotidianos",items:VOCAB_OBJETOS}}},
+  frases:{name:"Frases útiles",jp:"文",group:"frase",sub:{fr:{name:"Frases del día a día",items:FRASES}}}
+};
+
+const ITEM_INDEX={};
+for(const [deckKey,deck] of Object.entries(DECKS)){
+  for(const [subKey,sub] of Object.entries(deck.sub)){
+    for(const item of sub.items){ ITEM_INDEX[item.id]={item,deckKey,subKey,group:deck.group}; }
+  }
+}
+const ALL_ITEM_IDS=Object.keys(ITEM_INDEX);
+
+const Store=(()=>{
+  let mem={}; let available=true;
+  try{ const t='__kotodama_test__'; localStorage.setItem(t,'1'); localStorage.removeItem(t); }catch(e){ available=false; }
+  return {
+    available,
+    get(key,def){ if(!available) return (key in mem)?mem[key]:def; try{ const v=localStorage.getItem(key); return v===null?def:JSON.parse(v); }catch(e){ return (key in mem)?mem[key]:def; } },
+    set(key,value){ if(!available){ mem[key]=value; return; } try{ localStorage.setItem(key,JSON.stringify(value)); }catch(e){ mem[key]=value; } }
+  };
+})();
+
+const SRS_KEY='kotodama_srs_v1', STATE_KEY='kotodama_state_v1';
+function defaultState(){
+  return { streakCurrent:0, streakLongest:0, streakFreezes:1, lastPracticeDate:null, dailyGoal:15, todayDate:null, todayCount:0, totalReviews:0, totalCorrect:0, xp:0, speakingEnabled:true, soundEnabled:true, speechRate:0.85, history:{} };
+}
+let srsState=Store.get(SRS_KEY,{});
+let appState=Object.assign(defaultState(),Store.get(STATE_KEY,{}));
+function saveSrs(){ Store.set(SRS_KEY,srsState); }
+function saveState(){ Store.set(STATE_KEY,appState); }
+
+function todayLocalISO(d){ d=d||new Date(); const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+function addDaysISO(iso,days){ const [y,m,d]=iso.split('-').map(Number); const dt=new Date(y,m-1,d); dt.setDate(dt.getDate()+days); return todayLocalISO(dt); }
+function daysBetweenISO(a,b){ const [ay,am,ad]=a.split('-').map(Number),[by,bm,bd]=b.split('-').map(Number); const da=new Date(ay,am-1,ad),db=new Date(by,bm-1,bd); return Math.round((db-da)/86400000); }
+
+function ensureTodayBucket(){ const t=todayLocalISO(); if(appState.todayDate!==t){ appState.todayDate=t; appState.todayCount=0; } }
+ensureTodayBucket(); saveState();
+
+function getSrsItem(id){ return srsState[id]||null; }
+function updateSrs(id,quality){
+  let it=srsState[id]; const today=todayLocalISO();
+  if(!it){ it={interval:0,repetition:0,ease:2.5,due:today,last:null}; }
+  if(quality<3){ it.repetition=0; it.interval=1; }
+  else{
+    if(it.repetition===0) it.interval=1;
+    else if(it.repetition===1) it.interval=6;
+    else it.interval=Math.round(it.interval*it.ease);
+    it.repetition+=1;
+  }
+  it.ease=Math.max(1.3, it.ease+(0.1-(5-quality)*(0.08+(5-quality)*0.02)));
+  it.due=addDaysISO(today,it.interval); it.last=quality;
+  srsState[id]=it; saveSrs(); return it;
+}
+function isDue(id){ const it=getSrsItem(id); if(!it) return false; return it.due<=todayLocalISO(); }
+function isNew(id){ return !getSrsItem(id); }
+function masteryStage(id){ const it=getSrsItem(id); if(!it) return 0; if(it.repetition===0) return 1; if(it.interval<21) return 2; return 3; }
+
+function registerReview(correct){
+  ensureTodayBucket();
+  appState.totalReviews+=1; if(correct) appState.totalCorrect+=1;
+  appState.xp += correct?10:2; appState.todayCount+=1;
+  const t=todayLocalISO(); appState.history[t]=(appState.history[t]||0)+1;
+  const goalJustReached = appState.todayCount===appState.dailyGoal;
+  if(goalJustReached) advanceStreak(t);
+  saveState();
+  return { goalJustReached };
+}
+function advanceStreak(today){
+  const last=appState.lastPracticeDate;
+  if(last===today) return;
+  if(!last){ appState.streakCurrent=1; }
+  else{
+    const gap=daysBetweenISO(last,today);
+    if(gap===1) appState.streakCurrent+=1;
+    else if(gap>1 && appState.streakFreezes>0){ appState.streakFreezes-=1; appState.streakCurrent+=1; }
+    else if(gap>1) appState.streakCurrent=1;
+  }
+  appState.streakLongest=Math.max(appState.streakLongest,appState.streakCurrent);
+  appState.lastPracticeDate=today;
+  if(appState.streakCurrent>0 && appState.streakCurrent%10===0) appState.streakFreezes=Math.min(2,appState.streakFreezes+1);
+}
+function reconcileStreakDisplay(){
+  const t=todayLocalISO(), last=appState.lastPracticeDate;
+  if(!last || last===t) return;
+  if(daysBetweenISO(last,t)>1){ appState.streakCurrent=0; saveState(); }
+}
+reconcileStreakDisplay();
+
+function itemsInScope(scope){
+  if(scope.type==='sub') return DECKS[scope.deckKey].sub[scope.subKey].items;
+  if(scope.type==='deck') return Object.values(DECKS[scope.deckKey].sub).flatMap(s=>s.items);
+  return ALL_ITEM_IDS.map(id=>ITEM_INDEX[id].item);
+}
+function dueCountInScope(scope){ return itemsInScope(scope).filter(i=>isDue(i.id)).length; }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function buildSession(scope,sessionSize){
+  sessionSize=sessionSize||15;
+  const items=itemsInScope(scope);
+  let due=items.filter(i=>isDue(i.id));
+  let fresh=items.filter(i=>isNew(i.id));
+  due.sort((a,b)=>getSrsItem(a.id).due.localeCompare(getSrsItem(b.id).due));
+  let session=due.slice(0,sessionSize);
+  const newCap=Math.min(8,sessionSize-session.length);
+  if(newCap>0){ fresh=shuffle(fresh).slice(0,newCap); session=session.concat(fresh); }
+  if(session.length < Math.min(sessionSize,items.length)){
+    const already=new Set(session.map(i=>i.id));
+    const rest=shuffle(items.filter(i=>!already.has(i.id)));
+    session=session.concat(rest.slice(0,sessionSize-session.length));
+  }
+  return shuffle(session).map(item=>({item,exerciseType:pickExerciseType(item)}));
+}
+function pickExerciseType(item){
+  const group=ITEM_INDEX[item.id].group, speakingOn=appState.speakingEnabled;
+  let pool;
+  if(group==='kana') pool = speakingOn ? ['ver_sonido','oir_kana','oir_kana','hablar'] : ['ver_sonido','oir_kana','oir_kana'];
+  else pool = speakingOn ? ['ver_significado','significado_jp','oir_elegir','hablar'] : ['ver_significado','significado_jp','oir_elegir'];
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function pickDistractors(correctItem,count){
+  const group=ITEM_INDEX[correctItem.id].group, deckKey=ITEM_INDEX[correctItem.id].deckKey;
+  const pool=Object.values(DECKS[deckKey].sub).flatMap(s=>s.items).filter(i=>i.id!==correctItem.id);
+  const candidates = pool.length>=count ? pool : itemsInScope({type:'mixed'}).filter(i=>ITEM_INDEX[i.id].group===group && i.id!==correctItem.id);
+  return shuffle(candidates).slice(0,count);
+}
+
+let jpVoice=null;
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const voices=speechSynthesis.getVoices(); jpVoice=voices.find(v=>v.lang==='ja-JP')||voices.find(v=>v.lang&&v.lang.startsWith('ja'))||null; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function speakJP(text){
+  if(!appState.soundEnabled) return;
+  if(!('speechSynthesis' in window)){ showToast('Este navegador no tiene voz en japonés disponible'); return; }
+  try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='ja-JP'; u.rate=appState.speechRate||0.85; if(jpVoice) u.voice=jpVoice; speechSynthesis.speak(u); }catch(e){}
+}
+
+const SpeechRecognitionAPI=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+let activeRecognition=null;
+function normalizeJP(s){ return (s||'').replace(/[\s。、！？.!?,，\u3000]/g,'').trim(); }
+function levenshtein(a,b){
+  const m=a.length,n=b.length; if(m===0) return n; if(n===0) return m;
+  const dp=Array.from({length:m+1},(_,i)=>[i].concat(Array(n).fill(0)));
+  for(let j=0;j<=n;j++) dp[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) dp[i][j]= a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+  return dp[m][n];
+}
+function similarity(a,b){ const maxLen=Math.max(a.length,b.length); if(maxLen===0) return 1; return 1-levenshtein(a,b)/maxLen; }
+function transcriptMatches(expected,transcripts){
+  const nExp=normalizeJP(expected);
+  return transcripts.some(t=>{ const nT=normalizeJP(t); if(!nT) return false; if(nT===nExp) return true; if(nExp.length>=2 && (nT.includes(nExp)||nExp.includes(nT))) return true; return similarity(nExp,nT)>=0.7; });
+}
+function startSpeakingExercise(expectedText,callbacks){
+  if(!SpeechRecognitionAPI){ callbacks.onResult({ok:null,transcript:null,error:'unsupported'}); return; }
+  try{
+    activeRecognition=new SpeechRecognitionAPI();
+    activeRecognition.lang='ja-JP'; activeRecognition.interimResults=false; activeRecognition.maxAlternatives=4;
+    let handled=false;
+    activeRecognition.onstart=()=>callbacks.onStart&&callbacks.onStart();
+    activeRecognition.onresult=(e)=>{ handled=true; const alts=Array.from(e.results[0]).map(r=>r.transcript); const ok=transcriptMatches(expectedText,alts); callbacks.onResult({ok,transcript:alts[0]||'',error:null}); };
+    activeRecognition.onerror=(e)=>{ handled=true; callbacks.onResult({ok:null,transcript:null,error:e.error||'error'}); };
+    activeRecognition.onend=()=>{ if(!handled) callbacks.onResult({ok:null,transcript:null,error:'no-speech'}); callbacks.onEnd&&callbacks.onEnd(); };
+    activeRecognition.start();
+  }catch(err){ callbacks.onResult({ok:null,transcript:null,error:'unsupported'}); }
+}
+function stopSpeakingExercise(){ if(activeRecognition){ try{ activeRecognition.stop(); }catch(e){} activeRecognition=null; } }
+
+function $(sel){ return document.querySelector(sel); }
+function $$(sel){ return Array.from(document.querySelectorAll(sel)); }
+let toastTimer=null;
+function showToast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
+
+function showView(name){
+  $$('.view').forEach(v=>v.classList.remove('active'));
+  $('#view-'+name).classList.add('active');
+  $$('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  if(name==='home') renderHome();
+  if(name==='stats') renderStats();
+  if(name==='settings') renderSettings();
+  window.scrollTo(0,0);
+}
+$$('.navbtn').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+
+const ENSO_R=95, ENSO_CIRC=2*Math.PI*ENSO_R;
+function renderHome(){
+  ensureTodayBucket(); reconcileStreakDisplay();
+  $('#streakCount').textContent=appState.streakCurrent;
+  $('#streakLabel').textContent = appState.streakCurrent===1 ? 'día seguido' : 'días seguidos';
+  $('#streakRecord').textContent = `récord: ${appState.streakLongest} día${appState.streakLongest===1?'':'s'}`;
+  const goalPct=Math.min(1, appState.todayCount/appState.dailyGoal);
+  const ring=$('#ensoProgress');
+  ring.style.strokeDasharray=ENSO_CIRC; ring.style.strokeDashoffset=ENSO_CIRC*(1-goalPct);
+  $('#goalText').textContent=`${appState.todayCount} / ${appState.dailyGoal} hoy`;
+  $('#goalBarFill').style.width=(goalPct*100)+'%';
+  const totalDue=dueCountInScope({type:'mixed'});
+  $('#totalDueLabel').textContent = totalDue>0 ? `${totalDue} para repasar` : 'todo al día';
+  $('#startMixedLabel').textContent = totalDue>0 ? `Practicar ahora (${Math.min(totalDue,15)})` : 'Practicar algo nuevo';
+  const grid=$('#deckGrid');
+  grid.innerHTML=Object.entries(DECKS).map(([key,deck])=>{
+    const items=Object.values(deck.sub).flatMap(s=>s.items);
+    const due=items.filter(i=>isDue(i.id)).length;
+    const mastered=items.filter(i=>masteryStage(i.id)===3).length;
+    const pct=items.length?Math.round(mastered/items.length*100):0;
+    return `<button class="deck-card" data-deck="${key}">${due>0?`<span class="due-badge">${due}</span>`:''}<div class="jp">${deck.jp}</div><div class="name">${deck.name}</div><div class="meta">${items.length} elementos</div><div class="mastery-track"><div class="mastery-fill" style="width:${pct}%"></div></div></button>`;
+  }).join('');
+  $$('.deck-card').forEach(el=>el.addEventListener('click',()=>openDeckDetail(el.dataset.deck)));
+}
+$('#startMixedBtn').addEventListener('click',()=>launchSession({type:'mixed'}));
+
+let currentDeckKey=null;
+function openDeckDetail(deckKey){
+  currentDeckKey=deckKey;
+  const deck=DECKS[deckKey];
+  $('#deckDetailJp').textContent=deck.jp; $('#deckDetailName').textContent=deck.name;
+  const items=Object.values(deck.sub).flatMap(s=>s.items);
+  const due=items.filter(i=>isDue(i.id)).length;
+  $('#deckDetailMeta').textContent=`${items.length} elementos · ${due} para repasar`;
+  const list=$('#subdeckList');
+  list.innerHTML=Object.entries(deck.sub).map(([subKey,sub])=>{
+    const subDue=sub.items.filter(i=>isDue(i.id)).length;
+    const mastered=sub.items.filter(i=>masteryStage(i.id)===3).length;
+    return `<div class="subdeck-row" data-sub="${subKey}"><div><div class="name">${sub.name}</div><div class="meta">${sub.items.length} elementos · ${mastered} dominados${subDue>0?` · ${subDue} pendientes`:''}</div></div><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>`;
+  }).join('');
+  $$('.subdeck-row').forEach(el=>el.addEventListener('click',()=>launchSession({type:'sub',deckKey,subKey:el.dataset.sub})));
+  $('#deckDetailPracticeAll').onclick=()=>launchSession({type:'deck',deckKey});
+  showView('deck');
+}
+$('#deckBackBtn').addEventListener('click',()=>showView('home'));
+
+let session=[], sessionIdx=0, sessionCorrect=0;
+function launchSession(scope){
+  session=buildSession(scope,15);
+  if(session.length===0){ showToast('No hay elementos en este mazo todavía'); return; }
+  sessionIdx=0; sessionCorrect=0;
+  $('#sessionView').classList.add('active');
+  renderExercise();
+}
+function endSessionEarly(){
+  stopSpeakingExercise();
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  $('#sessionView').classList.remove('active');
+  showView('home');
+}
+$('#sessionCloseBtn').addEventListener('click',endSessionEarly);
+function updateSessionTop(){ const pct=session.length?(sessionIdx/session.length*100):0; $('#sessionProgressFill').style.width=pct+'%'; $('#sessionCounter').textContent=`${sessionIdx}/${session.length}`; }
+
+function renderExercise(){
+  if(sessionIdx>=session.length){ renderSessionSummary(); return; }
+  updateSessionTop();
+  const {item,exerciseType}=session[sessionIdx];
+  const body=$('#sessionBody');
+  const kicker={ver_sonido:'Reconocimiento',oir_kana:'Escucha y elige',hablar:'Habla',ver_significado:'Reconocimiento',significado_jp:'Reconocimiento',oir_elegir:'Escucha y elige'}[exerciseType]||'Repaso';
+
+  if(exerciseType==='hablar'){
+    body.innerHTML=`<div class="ex-kicker">${kicker}</div><div class="ex-prompt"><div class="ex-jp-big">${item.jp}</div><div class="ex-romaji">${item.romaji}</div>${item.es?`<div class="ex-es">${item.es}</div>`:''}<button class="speaker-btn small" id="hearBtn" style="margin-top:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 010 7"/></svg></button></div><div class="speak-stage"><button class="mic-btn" id="micBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v3"/></svg></button><div class="mic-status" id="micStatus">Toca el micrófono y repite la palabra</div><div class="transcript-box hidden" id="transcriptBox"></div><div class="manual-row hidden" id="manualRow"><button class="manual-btn bad" id="manualBad">Necesito practicar</button><button class="manual-btn good" id="manualGood">Lo dije bien</button></div></div>`;
+    $('#hearBtn').addEventListener('click',()=>speakJP(item.jp));
+    wireSpeakingExercise(item);
+    if(appState.soundEnabled) setTimeout(()=>speakJP(item.jp),350);
+    return;
+  }
+
+  let promptHtml,correctLabel,options;
+  if(exerciseType==='ver_sonido'){ promptHtml=`<div class="ex-jp-big">${item.jp}</div><div class="ex-hint">¿cómo suena?</div>`; correctLabel=item.romaji; options=[item,...pickDistractors(item,3)].map(i=>({key:i.id,label:i.romaji})); }
+  else if(exerciseType==='oir_kana'){ promptHtml=`<button class="speaker-btn" id="playBtn" style="margin:10px auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/></svg></button><div class="ex-hint">toca para escuchar</div>`; correctLabel=item.jp; options=[item,...pickDistractors(item,3)].map(i=>({key:i.id,label:i.jp})); }
+  else if(exerciseType==='ver_significado'){ promptHtml=`<div class="ex-jp-med">${item.jp}</div><div class="ex-romaji">${item.romaji}</div>`; correctLabel=item.es; options=[item,...pickDistractors(item,3)].map(i=>({key:i.id,label:i.es})); }
+  else if(exerciseType==='significado_jp'){ promptHtml=`<div class="ex-es" style="font-size:22px;">${item.es}</div><div class="ex-hint">¿cuál es la palabra en japonés?</div>`; correctLabel=item.jp; options=[item,...pickDistractors(item,3)].map(i=>({key:i.id,label:i.jp})); }
+  else{ promptHtml=`<button class="speaker-btn" id="playBtn" style="margin:10px auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/></svg></button><div class="ex-hint">toca para escuchar</div>`; correctLabel=item.es||item.jp; options=[item,...pickDistractors(item,3)].map(i=>({key:i.id,label:i.es||i.jp})); }
+  options=shuffle(options);
+
+  body.innerHTML=`<div class="ex-kicker">${kicker}</div><div class="ex-prompt">${promptHtml}</div><div class="options-grid" id="optionsGrid">${options.map(o=>`<button class="opt-btn" data-key="${o.key}">${o.label}</button>`).join('')}</div>`;
+  const playBtn=$('#playBtn');
+  if(playBtn){ playBtn.addEventListener('click',()=>speakJP(item.jp)); setTimeout(()=>speakJP(item.jp),300); }
+  $$('#optionsGrid .opt-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      $$('#optionsGrid .opt-btn').forEach(b=>b.disabled=true);
+      const isCorrect=btn.dataset.key===item.id;
+      btn.classList.add(isCorrect?'correct':'incorrect');
+      if(!isCorrect){ const rightBtn=$$('#optionsGrid .opt-btn').find(b=>b.dataset.key===item.id); if(rightBtn) rightBtn.classList.add('correct'); }
+      $$('#optionsGrid .opt-btn').forEach(b=>{ if(b!==btn && b.dataset.key!==item.id) b.classList.add('dim'); });
+      finishExercise(item,isCorrect,isCorrect?5:1,correctLabel);
+    });
+  });
+}
+
+function wireSpeakingExercise(item){
+  const micBtn=$('#micBtn'),status=$('#micStatus'),box=$('#transcriptBox'),manualRow=$('#manualRow');
+  let resolved=false;
+  micBtn.addEventListener('click',()=>{
+    if(resolved) return;
+    micBtn.classList.add('listening'); status.textContent='Escuchando…';
+    startSpeakingExercise(item.jp,{
+      onResult:(res)=>{
+        micBtn.classList.remove('listening');
+        if(res.error==='unsupported'){ $('#micDeniedModal').classList.add('show'); status.textContent='Reconocimiento de voz no disponible'; manualRow.classList.remove('hidden'); return; }
+        if(res.error==='not-allowed'||res.error==='permission-denied'){ $('#micDeniedModal').classList.add('show'); status.textContent='Permiso de micrófono denegado'; manualRow.classList.remove('hidden'); return; }
+        if(res.error==='no-speech'||res.error){ status.textContent='No se detectó audio, intenta de nuevo'; return; }
+        box.classList.remove('hidden'); box.textContent=res.transcript||'(sin texto)'; box.classList.add(res.ok?'correct':'incorrect');
+        status.textContent=res.ok?'¡Bien dicho!':'No coincide del todo';
+        manualRow.classList.remove('hidden');
+        if(res.ok){ resolved=true; setTimeout(()=>finishExercise(item,true,5,item.jp),550); }
+      }
+    });
+  });
+  $('#manualGood').addEventListener('click',()=>{ if(resolved) return; resolved=true; $('#manualGood').classList.add('chosen'); finishExercise(item,true,4,item.jp); });
+  $('#manualBad').addEventListener('click',()=>{ if(resolved) return; resolved=true; $('#manualBad').classList.add('chosen'); finishExercise(item,false,1,item.jp); });
+}
+
+function finishExercise(item,correct,quality,correctLabel){
+  updateSrs(item.id,quality);
+  const {goalJustReached}=registerReview(correct);
+  showFeedback(correct,item,correctLabel,goalJustReached);
+  if(correct) sessionCorrect+=1;
+}
+function showFeedback(correct,item,correctLabel,goalJustReached){
+  const banner=$('#feedbackBanner');
+  banner.classList.remove('correct','incorrect'); banner.classList.add(correct?'correct':'incorrect');
+  $('#feedbackTitle').textContent=correct?'¡Correcto!':'Sigue practicando';
+  $('#feedbackSub').textContent = goalJustReached ? '¡Meta diaria completada! Tu racha avanzó 🔥' : (correct?'':`${item.jp} — ${correctLabel}`);
+  banner.classList.add('show');
+}
+$('#feedbackNextBtn').addEventListener('click',()=>{ $('#feedbackBanner').classList.remove('show'); sessionIdx+=1; renderExercise(); });
+
+function renderSessionSummary(){
+  updateSessionTop();
+  const pct=session.length?Math.round(sessionCorrect/session.length*100):0;
+  const off=ENSO_CIRC*(1-pct/100);
+  $('#sessionBody').innerHTML=`<div class="summary-wrap"><svg class="summary-ring" viewBox="0 0 220 220"><circle class="enso-track" cx="110" cy="110" r="${ENSO_R}" style="stroke-width:12"/><circle cx="110" cy="110" r="${ENSO_R}" style="fill:none;stroke:url(#ensoGrad);stroke-width:12;stroke-linecap:round;stroke-dasharray:${ENSO_CIRC};stroke-dashoffset:${off};transform:rotate(-90deg);transform-origin:50% 50%;"/></svg><div class="summary-title">¡Sesión completa!</div><div class="summary-stats"><div class="summary-stat"><b>${sessionCorrect}/${session.length}</b><span>correctas</span></div><div class="summary-stat"><b>${pct}%</b><span>precisión</span></div></div><div class="summary-xp">+${sessionCorrect*10+(session.length-sessionCorrect)*2} XP</div><button class="cta-primary" id="summaryDoneBtn" style="max-width:260px;margin-top:26px;">Volver al inicio</button></div>`;
+  $('#summaryDoneBtn').addEventListener('click',()=>{ $('#sessionView').classList.remove('active'); showView('home'); });
+}
+
+function renderStats(){
+  $('#statTotalReps').textContent=appState.totalReviews;
+  $('#statAccuracy').textContent=(appState.totalReviews?Math.round(appState.totalCorrect/appState.totalReviews*100):0)+'%';
+  $('#statMastered').textContent=ALL_ITEM_IDS.filter(id=>masteryStage(id)===3).length;
+  $('#statLongest').textContent=appState.streakLongest;
+  $('#masteryList').innerHTML=Object.entries(DECKS).map(([key,deck])=>{
+    const items=Object.values(deck.sub).flatMap(s=>s.items);
+    const masteredN=items.filter(i=>masteryStage(i.id)===3).length;
+    const pct=items.length?Math.round(masteredN/items.length*100):0;
+    return `<div class="mastery-row"><div class="jp">${deck.jp}</div><div class="info"><div class="name">${deck.name}</div><div class="track"><div class="fill" style="width:${pct}%"></div></div></div><div class="pct">${pct}%</div></div>`;
+  }).join('');
+  renderHeatmap();
+}
+function renderHeatmap(){
+  const container=$('#heatmap'), days=91, today=new Date();
+  let cells=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date(today); d.setDate(d.getDate()-i);
+    const iso=todayLocalISO(d), count=appState.history[iso]||0;
+    let level=0; if(count>0) level=1; if(count>=5) level=2; if(count>=10) level=3; if(count>=appState.dailyGoal) level=4;
+    cells.push(`<div class="heat-cell" data-level="${level}" title="${iso}: ${count}"></div>`);
+  }
+  container.innerHTML=cells.join('');
+}
+
+const GOAL_OPTIONS=[10,15,20,30];
+function renderSettings(){
+  $('#toggleSpeaking').classList.toggle('on',appState.speakingEnabled);
+  $('#toggleSound').classList.toggle('on',appState.soundEnabled);
+  $('#goalPicker').innerHTML=GOAL_OPTIONS.map(g=>`<div class="goal-chip ${g===appState.dailyGoal?'active':''}" data-goal="${g}">${g}</div>`).join('');
+  $$('#goalPicker .goal-chip').forEach(chip=>chip.addEventListener('click',()=>{ appState.dailyGoal=Number(chip.dataset.goal); saveState(); renderSettings(); }));
+  $$('#ratePicker .goal-chip').forEach(chip=>chip.classList.toggle('active',Number(chip.dataset.rate)===appState.speechRate));
+}
+$('#toggleSpeaking').addEventListener('click',()=>{ appState.speakingEnabled=!appState.speakingEnabled; saveState(); renderSettings(); });
+$('#toggleSound').addEventListener('click',()=>{ appState.soundEnabled=!appState.soundEnabled; saveState(); renderSettings(); });
+$$('#ratePicker .goal-chip').forEach(chip=>chip.addEventListener('click',()=>{ appState.speechRate=Number(chip.dataset.rate); saveState(); renderSettings(); }));
+
+$('#infoBtn').addEventListener('click',()=>$('#methodologyModal').classList.add('show'));
+$('#openMethodology').addEventListener('click',()=>$('#methodologyModal').classList.add('show'));
+$('#closeMethodology').addEventListener('click',()=>$('#methodologyModal').classList.remove('show'));
+$('#resetProgressBtn').addEventListener('click',()=>$('#resetModal').classList.add('show'));
+$('#cancelReset').addEventListener('click',()=>$('#resetModal').classList.remove('show'));
+$('#confirmReset').addEventListener('click',()=>{
+  srsState={}; appState=defaultState(); ensureTodayBucket(); saveSrs(); saveState();
+  $('#resetModal').classList.remove('show'); showToast('Progreso reiniciado'); showView('home');
+});
+$('#closeMicDenied').addEventListener('click',()=>$('#micDeniedModal').classList.remove('show'));
+$$('.modal-overlay').forEach(ov=>ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.classList.remove('show'); }));
+
+renderHome();
+</script>
+</body>
+</html>
